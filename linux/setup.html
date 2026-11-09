@@ -57,16 +57,16 @@
       failed: ["USB was not set up", "TiinyOS keeps using Wi-Fi. You can try again at any time.", "Try again", "Close"],
     },
     api: {
-      ask: ["Use Tiiny's API in other apps", "Coding tools and agents reach Tiiny at openai.api.tiiny, anthropic.api.tiiny and ollama.api.tiiny. Setting this up adds those names to this computer and asks for your administrator password once.", "Set up API names", "Not now"],
+      ask: ["Use Tiiny's API in other apps", "Coding tools and agents reach Tiiny at openai.api.tiiny, anthropic.api.tiiny and ollama.api.tiiny. Setting this up adds those names to this computer's hosts file and asks for your administrator password once.", "Set up API names", "Not now"],
       working: ["Setting up API names", "Enter your password in the system prompt to continue."],
       done: ["API names ready", "Other apps on this computer can now reach Tiiny's API."],
       failed: ["API names were not set up", "TiinyOS itself keeps working. You can try again from Settings, API Key.", "Try again", "Close"],
     },
     "api-update": {
-      ask: ["Allow API names again", "TiinyOS was updated. openai.api.tiiny, anthropic.api.tiiny and ollama.api.tiiny are still set up on this computer; TiinyOS needs your administrator password once to answer them again.", "Allow", "Not now"],
-      working: ["Allowing API names", "Enter your password in the system prompt to continue."],
+      ask: ["Update API names", "Tiiny is now reachable at a different address. Pointing openai.api.tiiny, anthropic.api.tiiny and ollama.api.tiiny there asks for your administrator password.", "Update", "Not now"],
+      working: ["Updating API names", "Enter your password in the system prompt to continue."],
       done: ["API names ready", "Other apps on this computer can reach Tiiny's API again."],
-      failed: ["API names were not allowed", "TiinyOS itself keeps working. You can try again from Settings, API Key.", "Try again", "Close"],
+      failed: ["API names were not updated", "TiinyOS itself keeps working. You can try again from Settings, API Key.", "Try again", "Close"],
     },
   };
   const params = new URLSearchParams(location.search);

@@ -1,50 +1,42 @@
 package main
 
 import (
-	"encoding/binary"
+	"context"
 	"errors"
 	"fmt"
 	"log"
 	"net"
-	"net/http"
 	"os"
 	"os/exec"
-	"slices"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 )
 
 // API names. The app's API Key page and its agent integrations give other
 // programs http://openai.api.tiiny/v1, http://anthropic.api.tiiny and
-// http://ollama.api.tiiny. On Linux they resolve through a marked block in
-// /etc/hosts to 127.0.0.1, where pcsvr listens on port 80 with
-// cap_net_bind_service and proxies to the box. One pkexec call
-// (-api-names) writes both; pcsvr then restarts itself to gain the
-// capability.
+// http://ollama.api.tiiny. The box answers those names itself on its port
+// 80, so on Linux a marked block in /etc/hosts points them at the box's
+// current address. One pkexec call (-api-names <address>) writes it;
+// pcsvr asks again only when discovery finds the box at another address.
 
 var apiNames = []string{"openai.api.tiiny", "anthropic.api.tiiny", "ollama.api.tiiny"}
 
 const (
-	hostsPath       = "/etc/hosts"
-	hostsBegin      = "# tiinyos api names begin"
-	hostsEnd        = "# tiinyos api names end"
-	apiNamesAddr    = "127.0.0.1:80"
-	capNetBind      = 10         // CAP_NET_BIND_SERVICE
-	vfsCapRevision2 = 0x02000000 // VFS_CAP_REVISION_2
-	vfsCapEffective = 0x1        // VFS_CAP_FLAGS_EFFECTIVE
-	restartDelay    = 200 * time.Millisecond
+	hostsPath          = "/etc/hosts"
+	hostsBegin         = "# tiinyos api names begin"
+	hostsEnd           = "# tiinyos api names end"
+	apiNamesCheckEvery = 2 * time.Second
 )
 
-// hostsBlock is the marked /etc/hosts block for apiNames.
-func hostsBlock() string {
-	return hostsBegin + "\n127.0.0.1 " + strings.Join(apiNames, " ") + "\n" + hostsEnd + "\n"
+// hostsBlock is the marked /etc/hosts block pointing apiNames at ip.
+func hostsBlock(ip string) string {
+	return hostsBegin + "\n" + ip + " " + strings.Join(apiNames, " ") + "\n" + hostsEnd + "\n"
 }
 
-// withHostsBlock returns hosts with any earlier block replaced by the
-// current one, appended at the end.
-func withHostsBlock(hosts string) string {
+// withHostsBlock returns hosts with any earlier block replaced by one for
+// ip, appended at the end.
+func withHostsBlock(hosts, ip string) string {
 	var kept []string
 	inside := false
 	for _, line := range strings.SplitAfter(hosts, "\n") {
@@ -64,64 +56,40 @@ func withHostsBlock(hosts string) string {
 	if out != "" && !strings.HasSuffix(out, "\n") {
 		out += "\n"
 	}
-	return out + hostsBlock()
+	return out + hostsBlock(ip)
 }
 
-// netBindCapability is the security.capability xattr value granting
-// CAP_NET_BIND_SERVICE as permitted and effective (vfs_cap_data v2).
-func netBindCapability() []byte {
-	b := make([]byte, 20)
-	binary.LittleEndian.PutUint32(b[0:], vfsCapRevision2|vfsCapEffective)
-	binary.LittleEndian.PutUint32(b[4:], 1<<capNetBind)
-	return b
+// blockAddress is the address in hosts' block, or "" without a block.
+func blockAddress(hosts string) string {
+	_, rest, ok := strings.Cut(hosts, hostsBegin+"\n")
+	if !ok {
+		return ""
+	}
+	line, _, _ := strings.Cut(rest, "\n")
+	fields := strings.Fields(line)
+	if len(fields) < 1+len(apiNames) || net.ParseIP(fields[0]) == nil {
+		return ""
+	}
+	return fields[0]
 }
 
-// configureAPINames runs as root (pkexec): it writes the hosts block and
-// gives this executable, and no other file, the port 80 capability.
-func configureAPINames() error {
-	if os.Geteuid() != 0 {
-		return errors.New("-api-names must run as root")
-	}
-	old, err := os.ReadFile(hostsPath)
-	if err != nil {
-		return err
-	}
-	if updated := withHostsBlock(string(old)); updated != string(old) {
-		// In place, not by rename: /etc/hosts may be a bind mount.
-		if err := os.WriteFile(hostsPath, []byte(updated), 0o644); err != nil {
-			return err
-		}
-	}
-	self, err := os.Executable()
-	if err != nil {
-		return err
-	}
-	return syscall.Setxattr(self, "security.capability", netBindCapability(), 0)
-}
-
-type apiNamesState struct {
-	mu    sync.Mutex
-	state string
-	err   string
-}
-
-func (a *apiNamesState) set(state string, err error) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	a.state, a.err = state, ""
-	if err != nil {
-		a.err = err.Error()
-		log.Printf("api names: %s: %v", state, err)
-		return
-	}
-	log.Printf("api names: %s", state)
-}
-
-// namesInHosts reports whether every API name has a line in hosts,
-// comments aside: set up by hand or by another tool.
+// namesInHosts reports whether every API name has a line in hosts outside
+// the block, comments aside: set up by hand or by another tool.
 func namesInHosts(hosts string) bool {
 	listed := map[string]bool{}
+	inside := false
 	for _, line := range strings.Split(hosts, "\n") {
+		switch strings.TrimSpace(line) {
+		case hostsBegin:
+			inside = true
+			continue
+		case hostsEnd:
+			inside = false
+			continue
+		}
+		if inside {
+			continue
+		}
 		line, _, _ = strings.Cut(line, "#")
 		fields := strings.Fields(line)
 		for i := 1; i < len(fields); i++ {
@@ -136,41 +104,69 @@ func namesInHosts(hosts string) bool {
 	return true
 }
 
-// serve listens on apiNamesAddr when the hosts block is current and
-// pcsvr has the capability. Names that /etc/hosts already lists some
-// other way are left to that entry (state external, no prompt).
-func (a *apiNamesState) serve(handler http.Handler) {
-	data, err := os.ReadFile(hostsPath)
-	hosts := string(data)
-	switch {
-	case err != nil:
-		a.set("needs_admin", err)
-		return
-	case !strings.Contains(hosts, hostsBlock()) && namesInHosts(hosts):
-		a.set("external", nil)
-		return
-	case !strings.Contains(hosts, hostsBlock()):
-		a.set("needs_admin", errors.New("the /etc/hosts block is missing"))
-		return
+// configureAPINames runs as root (pkexec) and points the block at ip.
+func configureAPINames(ip string) error {
+	if os.Geteuid() != 0 {
+		return errors.New("-api-names must run as root")
 	}
-	listener, err := net.Listen("tcp", apiNamesAddr)
+	if parsed := net.ParseIP(ip); parsed == nil || parsed.To4() == nil {
+		return fmt.Errorf("not an IPv4 address: %q", ip)
+	}
+	old, err := os.ReadFile(hostsPath)
 	if err != nil {
-		a.set("needs_capability", err) // hosts block in place; pcsvr was replaced
-		return
+		return err
 	}
-	a.set("ready", nil)
-	log.Printf("api names: listening on %s", apiNamesAddr)
-	onlyNames := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Port 80 serves only the API names, never the local endpoints.
-		if !slices.Contains(apiNames, strings.ToLower(hostOnly(r.Host))) {
-			http.NotFound(w, r)
-			return
+	if updated := withHostsBlock(string(old), ip); updated != string(old) {
+		// In place, not by rename: /etc/hosts may be a bind mount.
+		return os.WriteFile(hostsPath, []byte(updated), 0o644)
+	}
+	return nil
+}
+
+// apiNamesState is the API names state: ready (block points at the box),
+// external (names listed outside the block; never prompts), no_box,
+// needs_admin (no block) or needs_update (block points elsewhere).
+type apiNamesState struct {
+	mu    sync.Mutex
+	state string
+	err   string
+}
+
+// apiNamesFor derives the state from /etc/hosts and the box address.
+func apiNamesFor(hosts, box string) (string, string) {
+	block := blockAddress(hosts)
+	switch {
+	case block == "" && namesInHosts(hosts):
+		return "external", ""
+	case box == "":
+		return "no_box", ""
+	case block == "":
+		return "needs_admin", "the /etc/hosts block is missing"
+	case block != box:
+		return "needs_update", fmt.Sprintf("the names point to %s, the box is at %s", block, box)
+	}
+	return "ready", ""
+}
+
+// watch re-derives the state every apiNamesCheckEvery until ctx ends.
+func (a *apiNamesState) watch(ctx context.Context, box func() string) {
+	for {
+		data, err := os.ReadFile(hostsPath)
+		state, why := apiNamesFor(string(data), box())
+		if err != nil {
+			state, why = "needs_admin", err.Error()
 		}
-		handler.ServeHTTP(w, r)
-	})
-	server := &http.Server{Handler: onlyNames, ReadHeaderTimeout: 5 * time.Second}
-	if err := server.Serve(listener); err != nil {
-		log.Printf("api names: %v", err)
+		a.mu.Lock()
+		if state != a.state {
+			log.Printf("api names: %s %s", state, why)
+		}
+		a.state, a.err = state, why
+		a.mu.Unlock()
+		select {
+		case <-ctx.Done():
+			return
+		case <-time.After(apiNamesCheckEvery):
+		}
 	}
 }
 
@@ -180,28 +176,18 @@ func (a *apiNamesState) status() map[string]any {
 	return map[string]any{"state": a.state, "names": apiNames, "error": a.err}
 }
 
-// setupWithAdmin runs the root helper through pkexec, then re-executes
-// pcsvr (same PID) so the new file capability takes effect.
-func (a *apiNamesState) setupWithAdmin() error {
+// setupWithAdmin points the block at box through pkexec.
+func (a *apiNamesState) setupWithAdmin(box string) error {
+	if box == "" {
+		return errors.New("no box found")
+	}
 	self, err := os.Executable()
 	if err != nil {
 		return err
 	}
-	if out, err := exec.Command("pkexec", self, "-api-names").CombinedOutput(); err != nil {
+	if out, err := exec.Command("pkexec", self, "-api-names", box).CombinedOutput(); err != nil {
 		return fmt.Errorf("%v: %s", err, strings.TrimSpace(string(out)))
 	}
-	log.Printf("api names: configured, restarting")
-	go func() {
-		time.Sleep(restartDelay) // let the HTTP reply go out
-		log.Fatal(syscall.Exec(self, os.Args, os.Environ()))
-	}()
+	log.Printf("api names: pointed at %s", box)
 	return nil
-}
-
-// hostOnly is host without a port.
-func hostOnly(host string) string {
-	if name, _, err := net.SplitHostPort(host); err == nil {
-		return name
-	}
-	return host
 }

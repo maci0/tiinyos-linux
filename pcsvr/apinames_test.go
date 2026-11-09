@@ -1,51 +1,61 @@
 package main
 
 import (
-	"encoding/binary"
 	"strings"
 	"testing"
 )
 
+const usbBox = "172.29.41.121"
+
 func TestWithHostsBlock(t *testing.T) {
 	base := "127.0.0.1 localhost\n::1 localhost"
-	once := withHostsBlock(base)
-	if !strings.HasPrefix(once, base+"\n") || !strings.HasSuffix(once, hostsBlock()) {
+	once := withHostsBlock(base, usbBox)
+	if !strings.HasPrefix(once, base+"\n") || !strings.HasSuffix(once, hostsBlock(usbBox)) {
 		t.Fatalf("first write:\n%s", once)
 	}
-	if again := withHostsBlock(once); again != once {
+	if again := withHostsBlock(once, usbBox); again != once {
 		t.Fatalf("not idempotent:\n%s", again)
 	}
-	stale := base + "\n" + hostsBegin + "\n127.0.0.1 old.api.tiiny\n" + hostsEnd + "\n10.0.0.1 nas\n"
-	got := withHostsBlock(stale)
-	if strings.Contains(got, "old.api.tiiny") || !strings.Contains(got, "10.0.0.1 nas\n") || strings.Count(got, hostsBegin) != 1 {
-		t.Fatalf("stale block:\n%s", got)
+	moved := withHostsBlock(once+"10.0.0.1 nas\n", "192.168.1.9")
+	if strings.Contains(moved, usbBox) || !strings.Contains(moved, "10.0.0.1 nas\n") || strings.Count(moved, hostsBegin) != 1 || blockAddress(moved) != "192.168.1.9" {
+		t.Fatalf("moved block:\n%s", moved)
 	}
-	if withHostsBlock("") != hostsBlock() {
+	if withHostsBlock("", usbBox) != hostsBlock(usbBox) {
 		t.Fatal("empty hosts")
 	}
 }
 
-func TestNetBindCapability(t *testing.T) {
-	b := netBindCapability()
-	// getcap prints this value as cap_net_bind_service=ep.
-	if len(b) != 20 || binary.LittleEndian.Uint32(b) != 0x02000001 || binary.LittleEndian.Uint32(b[4:]) != 1<<10 {
-		t.Fatalf("% x", b)
+func TestAPINamesFor(t *testing.T) {
+	block := "127.0.0.1 localhost\n" + hostsBlock(usbBox)
+	own := "127.0.0.1 localhost\n10.0.0.5 openai.api.tiiny anthropic.api.tiiny ollama.api.tiiny\n"
+	cases := []struct {
+		name, hosts, box, want string
+	}{
+		{"block points at the box", block, usbBox, "ready"},
+		{"box moved to Wi-Fi", block, "192.168.1.9", "needs_update"},
+		{"no block", "127.0.0.1 localhost\n", usbBox, "needs_admin"},
+		{"no box yet", "127.0.0.1 localhost\n", "", "no_box"},
+		{"own entries", own, usbBox, "external"},
+		{"own entries, no box", own, "", "external"},
+		{"commented entries", "# 10.0.0.5 openai.api.tiiny anthropic.api.tiiny ollama.api.tiiny\n", usbBox, "needs_admin"},
+		{"two of three names", "10.0.0.5 openai.api.tiiny anthropic.api.tiiny\n", usbBox, "needs_admin"},
+	}
+	for _, c := range cases {
+		if got, _ := apiNamesFor(c.hosts, c.box); got != c.want {
+			t.Errorf("%s: %s, want %s", c.name, got, c.want)
+		}
 	}
 }
 
-func TestNamesInHosts(t *testing.T) {
-	cases := map[string]bool{
-		"": false,
-		"172.29.41.121 openai.api.tiiny anthropic.api.tiiny ollama.api.tiiny\n":    true,
-		"10.0.0.5 OpenAI.api.tiiny\n10.0.0.5 anthropic.api.tiiny ollama.api.tiiny": true,
-		"# 10.0.0.5 openai.api.tiiny anthropic.api.tiiny ollama.api.tiiny\n":       false,
-		"10.0.0.5 openai.api.tiiny anthropic.api.tiiny\n":                          false,
-		"openai.api.tiiny 10.0.0.5\n10.0.0.5 anthropic.api.tiiny ollama.api.tiiny": false,
-		hostsBlock(): true,
-	}
-	for hosts, want := range cases {
-		if got := namesInHosts(hosts); got != want {
-			t.Errorf("namesInHosts(%q) = %v", hosts, got)
+func TestBlockAddress(t *testing.T) {
+	for hosts, want := range map[string]string{
+		"":                           "",
+		hostsBlock(usbBox):           usbBox,
+		hostsBegin + "\n" + hostsEnd: "",
+		hostsBegin + "\n1.2.3.4 a\n": "",
+	} {
+		if got := blockAddress(hosts); got != want {
+			t.Errorf("blockAddress(%q) = %q, want %q", hosts, got, want)
 		}
 	}
 }

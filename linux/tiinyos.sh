@@ -136,8 +136,7 @@ fi
 # with SIGKILL leaves them running; the UI will not start against a
 # stale service on 60000, so they go. A PID is signalled only while
 # /proc shows it running a pcsvr from this directory. cmdline, not exe:
-# pcsvr with cap_net_bind_service (API names) is not dumpable, so its
-# exe link is unreadable to the user.
+# exe is unreadable for a process that is not dumpable.
 stop_pids() {
   for pid in "$@"; do
     case "$(tr '\0' '\n' <"/proc/$pid/cmdline" 2>/dev/null | head -n 1)" in

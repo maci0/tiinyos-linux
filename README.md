@@ -34,10 +34,10 @@ then downloads TiinyOS (about 140 MB) and Electron (110 MB) to
 - **USB without a network daemon.** If no NetworkManager takes the box's
   USB link, TiinyOS asks once (polkit password prompt) and sets it up
   itself. Wi-Fi needs nothing.
-- **API names for other programs.** One prompt makes
-  `http://openai.api.tiiny/v1`, `anthropic.api.tiiny` and
-  `ollama.api.tiiny` work system-wide, over USB or Wi-Fi. Without it,
-  the box's mDNS names (`openai.api.tiiny.local`) still work.
+- **API names for other programs.** One password prompt adds
+  `openai.api.tiiny`, `anthropic.api.tiiny` and `ollama.api.tiiny` to
+  `/etc/hosts`, pointing at the box; skipped if they are already there.
+  The box's mDNS names (`openai.api.tiiny.local`) work without it.
 - **Switching** between USB and Wi-Fi while the app runs, with no restart.
 
 (The photo the real prompts show is Tiiny's, so it is left out here.)

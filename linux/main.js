@@ -221,7 +221,7 @@ const { BrowserWindow } = require("electron");
 const PC_SERVICE = "http://127.0.0.1:60000";
 const SETUP_POLL_MS = 3000;
 const SETUP_DONE_CLOSE_MS = 1500;
-const API_NAMES_RESTART_MS = 10000;
+const API_NAMES_READY_MS = 10000;
 const API_KEY_ROUTE = "api-key";
 const apiNamesDismissed = path.join(app.getPath("userData"), "api-names-dismissed");
 const offeredLinks = new Set();
@@ -240,9 +240,9 @@ async function postSetup(route) {
   }
 }
 
-// waitForAPINames polls until the restarted pcsvr reports the names ready.
+// waitForAPINames polls until pcsvr sees the updated /etc/hosts.
 async function waitForAPINames() {
-  const until = Date.now() + API_NAMES_RESTART_MS;
+  const until = Date.now() + API_NAMES_READY_MS;
   let last = { state: "failed", error: "PC service did not come back" };
   while (Date.now() < until) {
     await new Promise((resolve) => setTimeout(resolve, SETUP_POLL_MS / 3));
@@ -252,7 +252,7 @@ async function waitForAPINames() {
         return last;
       }
     } catch {
-      // pcsvr is restarting.
+      // pcsvr did not answer; poll again.
     }
   }
   return { state: "failed", error: last.error || "API names not ready" };
@@ -260,7 +260,7 @@ async function waitForAPINames() {
 
 async function setUpAPINames() {
   const result = await postSetup("/pcsvr/api-names/setup");
-  return result.state === "restarting" ? waitForAPINames() : result;
+  return result.state === "configured" ? waitForAPINames() : result;
 }
 
 // offerAPINames opens the prompt once per run. Without force it respects
@@ -278,9 +278,9 @@ async function offerAPINames(force) {
   } catch {
     return;
   }
-  // needs_capability: the /etc/hosts block is there, but a new pcsvr
-  // build lost the right to listen on port 80.
-  const mode = { needs_admin: "api", needs_capability: "api-update" }[status.state];
+  // needs_update: the /etc/hosts block points at an address the box
+  // no longer has (it moved between USB and Wi-Fi).
+  const mode = { needs_admin: "api", needs_update: "api-update" }[status.state];
   if (mode) {
     apiNamesOffered = true;
     openSetup(mode, setUpAPINames, () => fs.writeFileSync(apiNamesDismissed, ""));

@@ -9,6 +9,27 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (API names without port 80, 21:15)
+
+The owner asked not to use port 80 after a restart left "address
+already in use": both pcsvr processes (API and catalog) run the same
+binary, so with `cap_net_bind_service` on it the catalog instance bound
+127.0.0.1:80 first (`/proc/net/tcp` inode owned by uid 1000, held by
+the non-dumpable catalog pcsvr) and the API instance's bind failed and
+was reported as a missing capability. Removed the port 80 listener,
+the capability and the re-exec. The `/etc/hosts` block now points the
+names at the box's own address (the box answers them on its port 80:
+`curl -H 'Host: openai.api.tiiny' http://172.29.41.121/v1/models` gave
+401 earlier); pcsvr compares it with discovery every 2 s and reports
+`needs_update` when the box is elsewhere; only the instance with
+`APINames.Enabled` (`linux/pcsvr-api.yaml`) does this. The owner also
+asked about gvproxy: it gives VMs a user-mode network and does not
+change name resolution for host programs, so it was not used.
+`TestAPINamesFor`, `TestBlockAddress`, `TestWithHostsBlock` pass; in
+`unshare -rm`, `pcsvr -api-names 172.29.41.121` replaced a 127.0.0.1
+block and `getent hosts openai.api.tiiny` gave 172.29.41.121, and
+`-api-names '1.2.3.4; rm -rf /'` was refused.
+
 ## 2026-11-09 (KiloCode in VSCodium, 21:10)
 
 The owner confirmed Tiiny Music works on the desktop and asked for the

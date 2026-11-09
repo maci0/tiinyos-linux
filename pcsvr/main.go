@@ -55,7 +55,7 @@ func main() {
 	configPath := flag.String("f", "pcsvr-api.yaml", "service config (port and discovery settings are read)")
 	portFile := flag.String("port-file", "", "write the bound HTTP port here (for Port: 0, a free port)")
 	usbDHCP := flag.String("usb-dhcp", "", "as root (pkexec): bring up this Tiiny USB link and take its DHCP lease, then exit")
-	apiNamesSetup := flag.Bool("api-names", false, "as root (pkexec): add the API names to /etc/hosts and let this executable listen on port 80, then exit")
+	apiNamesSetup := flag.String("api-names", "", "as root (pkexec): point the API names in /etc/hosts at this box address, then exit")
 	flag.Parse()
 	if *usbDHCP != "" {
 		if err := configureUSBLink(*usbDHCP); err != nil {
@@ -64,8 +64,8 @@ func main() {
 		return
 	}
 
-	if *apiNamesSetup {
-		if err := configureAPINames(); err != nil {
+	if *apiNamesSetup != "" {
+		if err := configureAPINames(*apiNamesSetup); err != nil {
 			log.Fatal(err)
 		}
 		return
@@ -99,6 +99,9 @@ func main() {
 	if cfg.SSH {
 		go serveSSH(ctx, cfg, state)
 	}
+	if cfg.APINames {
+		go state.apiNames.watch(ctx, state.targetIP)
+	}
 	if cfg.USBLink {
 		go state.usb.watch(ctx)
 	}
@@ -112,7 +115,6 @@ func main() {
 		}
 		return net.JoinHostPort(ip, strconv.Itoa(deviceHTTPPort))
 	})
-	go state.apiNames.serve(handler)
 	server := &http.Server{
 		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
@@ -143,6 +145,7 @@ type config struct {
 	DNS          bool
 	SSH          bool
 	USBLink      bool
+	APINames     bool
 }
 
 func loadConfig(path string) config {
@@ -208,6 +211,8 @@ func loadConfig(path string) config {
 			cfg.DNS = val != "false"
 		case "SSHProxy.Enabled":
 			cfg.SSH = val != "false"
+		case "APINames.Enabled":
+			cfg.APINames = val == "true"
 		case "USBLink.Enabled":
 			cfg.USBLink = val == "true"
 		}
@@ -987,12 +992,12 @@ func register(mux *http.ServeMux, s *state) {
 		writeJSON(w, s.apiNames.status())
 	})
 	mux.HandleFunc("POST /pcsvr/api-names/setup", func(w http.ResponseWriter, r *http.Request) {
-		if err := s.apiNames.setupWithAdmin(); err != nil {
+		if err := s.apiNames.setupWithAdmin(s.targetIP()); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			writeJSON(w, map[string]any{"state": "failed", "error": err.Error()})
 			return
 		}
-		writeJSON(w, map[string]any{"state": "restarting"})
+		writeJSON(w, map[string]any{"state": "configured"})
 	})
 	mux.HandleFunc("GET /pcsvr/version", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]string{

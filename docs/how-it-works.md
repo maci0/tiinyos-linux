@@ -32,17 +32,17 @@ systemd-networkd can instead install `linux/tiiny-usb.network` once and never se
 
 Other programs reach the box's model APIs at the names the app's API Key
 page and its agent integrations give out: `http://openai.api.tiiny/v1`,
-`http://anthropic.api.tiiny` and `http://ollama.api.tiiny`. Linux does
-not resolve them by itself. pcsvr reads `/etc/hosts` first: if it
-already lists all three names (your own entries, any address), TiinyOS
-leaves them alone and never asks. Otherwise, once a box is connected,
-it offers to set them up ("Not now" is remembered; the API Key page offers it again).
-One `pkexec` prompt adds them to `/etc/hosts` as `127.0.0.1` (in a
-marked block) and gives pcsvr `cap_net_bind_service`; pcsvr then
-restarts itself and answers those three names, and only those, on
-127.0.0.1:80, forwarding to the box over USB or Wi-Fi. A launcher
-update leaves an unchanged pcsvr file in place, so it keeps the
-capability; a new pcsvr build loses it and the prompt comes back. To
+`http://anthropic.api.tiiny` and `http://ollama.api.tiiny`. The box
+answers those names itself on its port 80; Linux just does not resolve
+them. pcsvr reads `/etc/hosts` first: if it already lists all three
+names (your own entries, any address), TiinyOS leaves them alone and
+never asks. Otherwise, once a box is connected, it offers to set them up
+("Not now" is remembered; the API Key page offers it again). One
+`pkexec` prompt writes a marked block pointing the names at the box's
+current address. pcsvr checks the block against discovery every 2 s;
+when the box turns up at another address (USB is always
+172.29.41.121, Wi-Fi is whatever the router gives it), TiinyOS offers
+to update the block. Nothing listens on port 80 on this computer. To
 undo: delete the `tiinyos api names` block from `/etc/hosts`.
 
 Without that setup, the box's own mDNS names work on hosts that resolve

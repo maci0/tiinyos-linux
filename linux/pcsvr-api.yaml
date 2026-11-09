@@ -36,3 +36,6 @@ SSHProxy:
 
 USBLink:
   Enabled: true
+
+APINames:
+  Enabled: true
