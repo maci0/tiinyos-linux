@@ -95,8 +95,8 @@ store does not list them on Linux:
 
 Apps that run on the box itself (Tiiny Music, n8n, Open WebUI,
 OpenHands and the rest) do not depend on this port; Tiiny Music was
-checked. OCR inside TiinyOS is also missing: its addon uses the macOS
-and Windows OCR engines, and the app skips it.
+checked. OCR works: on Linux the app uses its built-in Tesseract
+(WebAssembly), which downloads its language data on first use.
 
 ## Tests
 

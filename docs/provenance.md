@@ -9,6 +9,23 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (OCR works; repository public, 21:50)
+
+The owner chose "optional Tesseract" for OCR and asked to make the
+repository public (`gh repo edit --visibility public`; the README's
+curl URL then answered 200). Checking the app first: `out/main/index.js`
+registers OCR providers `tesseract` (tesseract.js) and `paddleocr` on
+every platform and `system` (`@napi-rs/system-ocr`) only when not on
+Linux (`!bc&&b7.register(RG.system,...)`, `bc=platform==="linux"`), and
+the renderer's default image provider is `system` on macOS and Windows,
+else `tesseract` (`S$={image:ah||Mo?T$:x$}`). Running the bundled
+tesseract.js under TiinyOS's Electron in Node mode, as the provider
+does (`createWorker(["eng"], undefined, {langPath:"", cachePath})`), on
+a rendered PNG returned "Tiiny OCR works on Linux 42" and cached
+`eng.traineddata` (5 MB). So OCR needs no system Tesseract and nothing
+was added; README, `how-it-works.md` and the release notes no longer
+call OCR missing.
+
 ## 2026-11-09 (self-contained release build, 21:20 to 21:45)
 
 Asked by the repository owner: one executable that needs nothing

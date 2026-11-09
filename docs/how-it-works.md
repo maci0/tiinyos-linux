@@ -87,15 +87,17 @@ own app list) and its OS update check takes 7 to 14 s against the app's
 Updating the box from Settings, TiinyOS fixes the first two: checked on
 0.1.39. After a box OS update the box asks for the device password once.
 
-Not ported: OCR itself (`@napi-rs/system-ocr` has no Linux build; the
-app logs it and continues), text selection helpers, and the Windows
-auto-update installer (the launcher updates the app instead). Image
-resizing uses sharp's WebAssembly build, fetched from npm, because the
-native Linux addon crashes under Electron. x64 only.
-A future TiinyOS release may call pcsvr routes this port does not have
-yet. The launcher keeps the previous version for that case: point
-`~/.local/share/tiinyos/app/current` at the older directory and start
-with `TIINY_APP_UPDATE=0`, which skips the update check.
+OCR uses the app's built-in Tesseract (tesseract.js), its default on
+Linux; the macOS and Windows system engine (`@napi-rs/system-ocr`) is
+not registered there, and its load warning is harmless. Not ported: text
+selection helpers and the Windows auto-update installer (the launcher
+updates the app instead). Image resizing uses sharp's WebAssembly
+build, fetched from npm, because the native Linux addon crashes
+under Electron. x64 only.  A future TiinyOS release may call pcsvr
+routes this port does not have yet. The launcher keeps the previous
+version for that case: point `~/.local/share/tiinyos/app/current`
+at the older directory and start with `TIINY_APP_UPDATE=0`, which
+skips the update check.
 
 
 ## References
