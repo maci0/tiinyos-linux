@@ -4,11 +4,10 @@
 *.dmg
 *.msi
 
-# Downloaded app and Electron (fetch.py), profile data, local pcsvr builds.
+# Downloaded app and Electron, and the profile, when linux/tiinyos.sh
+# runs from a staged tree.
 linux/app/
 linux/data/
-linux/pcsvr
-linux/pcsvr.new
 __pycache__/
 
 # Build output and scratch.
@@ -19,6 +18,7 @@ auth_data/
 
 # Go
 pcsvr/pcsvr
+fetch/fetch
 *.test
 
 # Editor and OS

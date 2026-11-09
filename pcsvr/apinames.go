@@ -78,7 +78,7 @@ func blockAddress(hosts string) string {
 func namesInHosts(hosts string) bool {
 	listed := map[string]bool{}
 	inside := false
-	for _, line := range strings.Split(hosts, "\n") {
+	for line := range strings.SplitSeq(hosts, "\n") {
 		switch strings.TrimSpace(line) {
 		case hostsBegin:
 			inside = true

@@ -22,6 +22,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -171,7 +172,7 @@ func loadConfig(path string) config {
 	// The shipped file is a small go-zero yaml. A few integer and string
 	// fields are enough; the rest of the document is ignored.
 	section := ""
-	for _, line := range strings.Split(string(raw), "\n") {
+	for line := range strings.SplitSeq(string(raw), "\n") {
 		trim := strings.TrimSpace(line)
 		if trim == "" || strings.HasPrefix(trim, "#") {
 			continue
@@ -456,13 +457,7 @@ func publish(dev *device) published {
 		if addr.Address == "" {
 			continue
 		}
-		seen := false
-		for _, have := range ipv4 {
-			if have == addr.Address {
-				seen = true
-				break
-			}
-		}
+		seen := slices.Contains(ipv4, addr.Address)
 		if !seen {
 			ipv4 = append(ipv4, addr.Address)
 		}
@@ -805,7 +800,7 @@ func broadcast(n *net.IPNet) net.IP {
 		return nil
 	}
 	out := make(net.IP, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		out[i] = ip[i] | ^mask[i]
 	}
 	return out

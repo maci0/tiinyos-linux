@@ -17,7 +17,9 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: #fff; color: var(--text); }
   body { display: flex; flex-direction: column; user-select: none; }
-  .photo { height: 168px; background: #e9edf0 center 38% / cover no-repeat; }
+  .photo { height: 168px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f4f6f9 0%, #e3e9f0 100%) center 38% / cover no-repeat; color: #1d1d1f; }
+  .photo svg { width: 72px; height: 72px; padding: 22px; border-radius: 28px; background: #fff; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .photo.image svg { display: none; }
   main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 24px 32px 28px; text-align: center; }
   h1 { margin: 0 0 8px; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
   p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); max-width: 380px; }
@@ -33,7 +35,7 @@
 </style>
 </head>
 <body>
-<div class="photo" id="photo"></div>
+<div class="photo" id="photo"><svg id="icon" viewBox="0 0 24 24" aria-hidden="true"></svg></div>
 <main>
   <section>
     <h1 id="title">TiinyOS</h1>
@@ -72,8 +74,20 @@
   };
   const params = new URLSearchParams(location.search);
   const mode = TEXT[params.get("mode")] || TEXT.usb;
+  // Header: the app's own photo when main.js passes it, else a line icon.
+  const ICONS = {
+    usb: ["M9 2v5", "M15 2v5", "M7 7h10v5a5 5 0 0 1-10 0z", "M12 17v5"],
+    api: ["M8 7l-5 5 5 5", "M16 7l5 5-5 5", "M14 4l-4 16"],
+  };
+  const photo = document.getElementById("photo");
   if (params.get("image")) {
-    document.getElementById("photo").style.backgroundImage = `url("${params.get("image")}")`;
+    photo.style.backgroundImage = `url("${params.get("image")}")`;
+    photo.classList.add("image");
+  }
+  for (const d of ICONS[params.get("mode") === "usb" ? "usb" : "api"]) {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", d);
+    document.getElementById("icon").appendChild(path);
   }
   function show(state, detail) {
     const [title, text, primary, secondary, tertiary] = mode[state];

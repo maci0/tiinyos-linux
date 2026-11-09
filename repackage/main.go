@@ -1,7 +1,7 @@
 // TiinyOS Linux, one executable.
 //
-// The payload holds only this project's files: the launcher, main.js,
-// the Linux pcsvr, and the fetch scripts. On start it unpacks them
+// The payload holds this project's files and a pinned 7-Zip: the
+// launcher, main.js, the Linux pcsvr, fetch and 7zz. On start it unpacks them
 // under ~/.local/share/tiinyos/launcher when they changed, then execs
 // linux/tiinyos.sh, which downloads the official TiinyOS app (and
 // Electron) on first run and on every newer release.

@@ -13,12 +13,12 @@ import (
 )
 
 // extractPayload writes over the previous tree. A file whose content is
-// unchanged is left alone, so pcsvr keeps the cap_net_bind_service it
-// got for the API names (rewriting a file drops its capability); a file
-// the payload no longer has is removed.
+// unchanged is left alone, a changed one is replaced by rename (a
+// running pcsvr cannot be written in place), and a file the payload no
+// longer has is removed.
 //
-// payload.zip is produced by pack/build.sh. It holds linux/ and pack/
-// files of this project only, never Tiiny's app or Electron.
+// payload.zip is produced by pack/build.sh. It holds this project's
+// linux/ files and the pinned 7-Zip, never Tiiny's app or Electron.
 //
 //go:embed payload.zip
 var payload []byte
@@ -54,7 +54,7 @@ func extractPayload(dir string) error {
 			mode = 0o644
 		}
 		// Replaced by rename: a running pcsvr cannot be written in place.
-		temp := target + ".new"
+		temp := target + ".part"
 		out, err := os.OpenFile(temp, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, mode)
 		if err != nil {
 			return err

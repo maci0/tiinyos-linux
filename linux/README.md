@@ -1,12 +1,15 @@
 # Launcher
 
-`tiinyos.sh` installs or updates the official TiinyOS app with
-`../pack/fetch.py`, starts the Linux `pcsvr` twice (the PC service on
+`tiinyos.sh` installs or updates the official TiinyOS app and Electron
+with `fetch` (Go, in `../fetch/`; it unpacks Tiiny's installer with the
+`7zz` beside it), starts the Linux `pcsvr` twice (the PC service on
 60000 and the catalog on a free port), and runs Electron with
 `main.js`. It also writes `~/.local/share/applications/tiinyos.desktop`
 (app menu, icon, and the `tiinyai://` link handler) and runs from the
 profile directory, whose `.env` is empty: the app loads `.env` from the
-working directory.
+working directory. `pack/build.sh` stages this directory with the built
+`pcsvr`, `fetch` and `7zz`; `dist/tiinyos` unpacks it to
+`~/.local/share/tiinyos/launcher` and runs it.
 
 One launcher per profile owns the services (`flock` on
 `launcher.lock`). A second start only runs Electron, which hands the
@@ -16,22 +19,14 @@ the tray; the launcher forwards those to Electron instead. The services
 stop when no Electron holds the profile's `SingletonLock` any more,
 which covers a start made while the previous window was quitting.
 
-```sh
-linux/tiinyos.sh
-```
-
-| Variable | Default | Meaning |
+| Variable | Default (`dist/tiinyos`) | Meaning |
 |---|---|---|
-| `TIINY_DATA_DIR` | `linux/data` | Electron profile, `pcsvr.log`, `catalog.log`, `catalog.port`, `pcsvr.pids` |
-| `TIINY_APP_DIR` | `linux/app` | Downloaded TiinyOS versions, `current` link, Electron |
+| `TIINY_DATA_DIR` | `~/.local/share/tiinyos/data` | Electron profile, `pcsvr.log`, `catalog.log`, `catalog.port`, `pcsvr.pids` |
+| `TIINY_APP_DIR` | `~/.local/share/tiinyos/app` | Downloaded TiinyOS versions, `current` link, Electron |
 | `TIINY_ELECTRON` | downloaded 40.10.6 | Electron binary to use instead |
 | `TIINY_APP_UPDATE` | unset | `0` skips the update check when a version is installed |
 | `TIINY_SHM_DIR` | `$TIINY_DATA_DIR/shm` | `TMPDIR` for Chromium shared memory |
-| `TIINY_LAUNCH` | `linux/tiinyos.sh` | Command the desktop entry runs; `dist/tiinyos` sets itself |
-
-`pcsvr.new` is used when it is executable, otherwise `pcsvr`. Build
-with `go build -o ../linux/pcsvr.new .` in `pcsvr/`; the kernel refuses
-to overwrite a running binary.
+| `TIINY_LAUNCH` | the executable | Command the desktop entry runs |
 
 The window uses Wayland when `XDG_SESSION_TYPE` is `wayland` or
 `WAYLAND_DISPLAY` is set, otherwise X11.
@@ -44,7 +39,7 @@ The window uses Wayland when `XDG_SESSION_TYPE` is `wayland` or
 | `setup.html` | The setup prompt in two modes. `usb`: `main.js` polls `GET 127.0.0.1:60000/pcsvr/usb-link` and opens it once per attempt for a link in `needs_admin` (a new attempt starts when a link appears or loses its address); "Set up USB" calls `POST /pcsvr/usb-link/setup?name=<link>`. `api`: with a box connected and `GET /pcsvr/api-names` in `needs_admin` (mode `api`) or `needs_update` (mode `api-update`: the hosts block points at an address the box no longer has), it opens once per run; "Not now" skips that run (the API Key page offers it again), "Don't ask again" is remembered in `api-names-dismissed` in the profile (delete the file to be asked again). "Set up API names" calls `POST /pcsvr/api-names/setup`. Both raise the polkit password prompt (pkexec). |
 | `integrations/` | Linux scripts for Agent Store integrations, added to their manifests by `main.js` (KiloCode: editor search, detect, preflight, install, open, uninstall, with VSCodium added). |
 | `preload.js` | Makes Windows-only calls (powershell, reg, schtasks, and others) fail the way the bundle already handles. |
-| `pcsvr-api.yaml` | PC service: port 60000, DNS 60053, discovery, SSH forward 60022, and `USBLink` (gives the box's USB link its DHCP address: NetworkManager profile, else `pkexec pcsvr -usb-dhcp <link>`). |
+| `pcsvr-api.yaml` | PC service: port 60000, DNS 60053, discovery, SSH forward 60022,, `USBLink` (gives the box's USB link its DHCP address: NetworkManager profile, else `pkexec pcsvr -usb-dhcp <link>`) and `APINames` (keeps the `/etc/hosts` block for the API names pointed at the box: `pkexec pcsvr -api-names <address>`). |
 | `compat.yaml` | Catalog: port 0 (free port), discovery on, no DNS or SSH. |
 | `tiiny-usb.network` | systemd-networkd DHCP config for that link (`Property=ID_VENDOR=Tiiny`), for hosts without NetworkManager. |
 
@@ -54,7 +49,7 @@ Run the app under Xvfb with DevTools on, then probe from the renderer:
 
 ```sh
 Xvfb :99 -screen 0 1600x1000x24 -nolisten tcp &
-env -u WAYLAND_DISPLAY XDG_SESSION_TYPE=x11 DISPLAY=:99 linux/tiinyos.sh --remote-debugging-port=9222
+env -u WAYLAND_DISPLAY XDG_SESSION_TYPE=x11 DISPLAY=:99 dist/tiinyos --remote-debugging-port=9222
 ```
 
 With no box, `fetch("http://api.tiiny/v1/models")` in the renderer

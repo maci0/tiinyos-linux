@@ -347,7 +347,7 @@ func dhcpLease(iface *net.Interface) (lease, error) {
 	if _, err := rand.Read(xid[:]); err != nil {
 		return lease{}, err
 	}
-	for attempt := 0; attempt < dhcpAttempts; attempt++ {
+	for range dhcpAttempts {
 		offer, ok := dhcpExchange(fd, bcast, dhcpMessage(1, xid, iface.HardwareAddr, nil, nil), xid, 2)
 		if !ok {
 			continue
@@ -452,7 +452,7 @@ func parseDHCPReply(p []byte, xid [4]byte) (dhcpReply, bool) {
 	if len(b) < 240 || b[0] != 2 || [4]byte(b[4:8]) != xid || [4]byte(b[236:240]) != [4]byte{99, 130, 83, 99} {
 		return dhcpReply{}, false
 	}
-	r := dhcpReply{lease: lease{addr: net.IP(append([]byte(nil), b[16:20]...))}}
+	r := dhcpReply{addr: net.IP(append([]byte(nil), b[16:20]...))}
 	for i := 240; i < len(b) && b[i] != 255; {
 		if b[i] == 0 {
 			i++

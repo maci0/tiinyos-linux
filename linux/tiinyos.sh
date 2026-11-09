@@ -1,42 +1,32 @@
 #!/bin/sh
 # Launch TiinyOS on Linux.
 #
-# The UI is Tiiny's own Electron app. pack/fetch.py downloads the newest
-# official Windows x64 build from Tiiny on every start when a newer one
-# exists, and extracts its app.asar under TIINY_APP_DIR. Electron is
-# TIINY_ELECTRON when set, otherwise the pinned official release that
-# fetch.py downloads. pcsvr, the PC service the UI expects, is the Linux
-# build in this directory.
+# The UI is Tiiny's own Electron app. fetch (this directory) downloads
+# the newest official Windows x64 build from Tiiny on every start when a
+# newer one exists, and extracts its app.asar under TIINY_APP_DIR with
+# the 7zz beside it. Electron is TIINY_ELECTRON when set, otherwise the
+# pinned official release that fetch downloads. pcsvr, the PC service
+# the UI expects, is the Linux build in this directory.
 
 set -eu
 
 ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
-FETCH=$ROOT/../pack/fetch.py
 # Both are made absolute: the launcher later runs from the profile.
 mkdir -p "${TIINY_DATA_DIR:-$ROOT/data}" "${TIINY_APP_DIR:-$ROOT/app}"
 TIINY_DATA_DIR=$(CDPATH='' cd -- "${TIINY_DATA_DIR:-$ROOT/data}" && pwd)
 TIINY_APP_DIR=$(CDPATH='' cd -- "${TIINY_APP_DIR:-$ROOT/app}" && pwd)
 export TIINY_DATA_DIR
 
-for tool in python3 7z; do
-  if ! command -v "$tool" >/dev/null 2>&1; then
-    echo "tiinyos: $tool is required" >&2
+for tool in fetch 7zz pcsvr; do
+  if [ ! -x "$ROOT/$tool" ]; then
+    echo "tiinyos: $ROOT/$tool is missing; build with pack/build.sh" >&2
     exit 1
   fi
 done
-# pcsvr.new is used while an older pcsvr is still mapped. The kernel
-# refuses to overwrite a running binary.
 PCSVR=$ROOT/pcsvr
-if [ -x "$ROOT/pcsvr.new" ]; then
-  PCSVR=$ROOT/pcsvr.new
-fi
-if [ ! -x "$PCSVR" ]; then
-  echo "tiinyos: $ROOT/pcsvr is missing; build it from pcsvr/" >&2
-  exit 1
-fi
 
-APP=$(python3 "$FETCH" app "$TIINY_APP_DIR")
-ELECTRON=${TIINY_ELECTRON:-$(python3 "$FETCH" electron "$TIINY_APP_DIR")}
+APP=$("$ROOT/fetch" app "$TIINY_APP_DIR")
+ELECTRON=${TIINY_ELECTRON:-$("$ROOT/fetch" electron "$TIINY_APP_DIR")}
 if [ ! -x "$ELECTRON" ]; then
   echo "tiinyos: electron not found at $ELECTRON" >&2
   exit 1

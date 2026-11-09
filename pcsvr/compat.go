@@ -119,7 +119,7 @@ func upgradeWS(w http.ResponseWriter, r *http.Request) (net.Conn, bool) {
 }
 
 func selectedProtocol(header string) string {
-	for _, part := range strings.Split(header, ",") {
+	for part := range strings.SplitSeq(header, ",") {
 		part = strings.TrimSpace(part)
 		if part != "" {
 			return part

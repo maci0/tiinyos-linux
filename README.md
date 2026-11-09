@@ -6,23 +6,26 @@ USB or Wi-Fi. Unofficial; not affiliated with or endorsed by Tiiny AI.
 TiinyOS ships for Windows and macOS only: an Electron app plus a Go
 service, `pcsvr`, that Wine cannot run. This project runs the official
 app under Electron and replaces `pcsvr` with a Linux service written
-from scratch for the same HTTP API. No Tiiny code is in this repository:
-on first start, and whenever Tiiny releases a new version, the launcher
-downloads the official build from Tiiny.
+from scratch for the same HTTP API. No Tiiny code is in this repository
+or in the release: on first start, and whenever Tiiny releases a new
+version, the launcher downloads the official build from Tiiny.
 
 ## Install
 
-Needs `python3`, `7z` (p7zip) and Go 1.25.
+Download `tiinyos` from the
+[latest release](https://github.com/maci0/tiinyos-linux/releases/latest),
+then:
 
 ```sh
-pack/build.sh
-dist/tiinyos
+chmod +x tiinyos && ./tiinyos
 ```
 
-`dist/tiinyos` is one 10 MB executable. It adds TiinyOS to the app menu,
-then downloads TiinyOS (about 140 MB) and Electron (110 MB) to
-`~/.local/share/tiinyos`. To run from the source tree instead:
-`(cd pcsvr && go build -o ../linux/pcsvr.new .) && linux/tiinyos.sh`.
+One 18 MB x86-64 executable, nothing else to install. It adds TiinyOS
+to the app menu, then downloads TiinyOS (about 140 MB, from Tiiny) and
+Electron (110 MB, from its GitHub release) to `~/.local/share/tiinyos`.
+
+To build it yourself (Go 1.27, python3, curl, tar with xz):
+`pack/build.sh` writes `dist/tiinyos`.
 
 ## What it adds
 
@@ -38,25 +41,43 @@ then downloads TiinyOS (about 140 MB) and Electron (110 MB) to
   `openai.api.tiiny`, `anthropic.api.tiiny` and `ollama.api.tiiny` to
   `/etc/hosts`, pointing at the box; skipped if they are already there.
   The box's mDNS names (`openai.api.tiiny.local`) work without it.
+- **KiloCode** from the Agent Store in VS Code, Cursor or VSCodium, set
+  up to use the box's models.
 - **Switching** between USB and Wi-Fi while the app runs, with no restart.
 
-(The photo the real prompts show is Tiiny's, so it is left out here.)
+In the app, the prompts show the box photo from the downloaded TiinyOS.
 
 ## Status
 
 Tested with TiinyOS 1.0.3 and a real box under Xvfb and on KDE Wayland:
-chat, model store, dashboard, vault, history, agent store, settings,
-box OS update, power cycles, USB and Wi-Fi, the KiloCode integration
-(VS Code, Cursor or VSCodium). Not ported: OCR (no Linux build of its
-addon). Tiiny's store offers its other agent integrations (OpenCode,
-Goose and the rest) for macOS and Windows only. x64 only. Details:
-[docs/how-it-works.md](docs/how-it-works.md).
+chat, model store, dashboard, vault, history, agent store, Tiiny Music,
+settings, box OS update, power cycles, USB and Wi-Fi. x86-64 only.
+Details: [docs/how-it-works.md](docs/how-it-works.md).
+
+## Missing on Linux
+
+Tiiny's Agent Store offers these desktop integrations for macOS and
+Windows only (their downloads are macOS and Windows builds), so the
+store does not list them on Linux:
+
+| Integration | Kind |
+|---|---|
+| OpenCode | CLI |
+| Goose | desktop app |
+| Pi | CLI |
+| Hermes Agent | desktop app |
+| OpenClaw | CLI |
+| Tiiny Meeting | desktop app |
+
+Apps that run on the box itself (Tiiny Music, n8n, Open WebUI,
+OpenHands and the rest) do not depend on this port; Tiiny Music was
+checked. OCR inside TiinyOS is also missing: its addon uses the macOS
+and Windows OCR engines, and the app skips it.
 
 ## Tests
 
 ```sh
-(cd pcsvr && go test ./...)
-python3 -m unittest discover -s tests
+for m in pcsvr fetch repackage; do (cd $m && go test ./...); done
 ```
 
 ## Layout
@@ -64,11 +85,15 @@ python3 -m unittest discover -s tests
 | Path | What it is |
 |---|---|
 | `pcsvr/` | Linux PC service |
-| `linux/` | Launcher, Electron entry, setup prompt, configs |
-| `pack/` | Downloads the official app and Electron; builds `dist/tiinyos` |
-| `repackage/` | Self-extractor for the launcher files |
+| `fetch/` | Downloads and unpacks the official app and Electron |
+| `linux/` | Launcher, Electron entry, setup prompt, integration scripts, configs |
+| `pack/` | `build.sh` builds `dist/tiinyos`; API path tracker |
+| `repackage/` | Self-extractor that is `dist/tiinyos` |
 | `docs/` | How it works, API reference, provenance ledger |
 
 ## License
 
 MIT (`LICENSE`) for this repository. TiinyOS stays under Tiiny's terms.
+The executable includes 7-Zip 26.05 (`7zz`, LGPL-2.1 with BSD parts;
+license in `7zz-License.txt` next to it, source at
+<https://github.com/ip7z/7zip/releases/tag/26.05>).

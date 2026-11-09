@@ -9,6 +9,51 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (self-contained release build, 21:20 to 21:45)
+
+Asked by the repository owner: one executable that needs nothing
+installed, Go 1.27 idioms, cleaner screenshots, the missing store items
+in the README, a release.
+
+- `fetch/` (Go, stdlib only) replaces `pack/fetch.py` and
+  `pack/extract.py`; the macOS `.pkg` branch (cpio, gzip, never used)
+  was dropped. It runs the pinned static 7-Zip shipped beside it
+  (`7zzs` 26.05 from github.com/ip7z/7zip, tarball sha256
+  `22cf82fc...a232e`, checked in `pack/build.sh`; 26.06 was three days
+  old) because Go has no NSIS reader. Tests: the Python cases ported,
+  plus Electron's SHASUMS256 check, unzip modes and symlinks, path
+  escapes, and `FuzzAsarFile` (20 s; a corrupt header could ask for a
+  4 GB allocation before the size checks were added). With
+  `env -i PATH=/nonexistent`, `fetch app` downloaded and installed
+  TiinyOS 1.0.3 (`app.asar` byte-identical to the Python install,
+  unpacked tree identical) and `fetch electron` installed 40.10.6.
+  `dist/tiinyos` (18 MB) with a fresh HOME on Xvfb reached the box's
+  login screen with the box found; quitting left no pcsvr.
+- All modules are `go 1.27`; `go fix` applied `strings.SplitSeq`,
+  `maps.Copy`, `slices.Contains`, integer ranges and a promoted-field
+  composite literal.
+- The self-extractor's temporary files are `.part`, and the launcher no
+  longer prefers a `pcsvr.new` (a leftover could have been run).
+- The owner reported Kilo Code using the Kilo gateway. Kilo Code 7.8.27
+  starts new chats on `kilo-code.new.model.providerID`/`modelID`
+  (defaults `kilo`, `kilo-auto/free`) even though `kilo debug config`
+  showed `tiiny/default` and `kilo run -m tiiny/default` answered
+  through the box. The Linux `configure.sh` now also runs
+  `editor-settings.js`, which sets those two settings to `tiiny` /
+  `default` in each editor with the extension, keeping a value the user
+  changed and skipping a settings file with comments (checked with a
+  throwaway HOME); run on the owner's VSCodium it wrote both settings.
+- While testing, VSCodium (pid 3844298, started by the KiloCode Open
+  click while TiinyOS ran with `--remote-debugging-port=9222`) held
+  127.0.0.1:9222 itself; its environment and `argv.json` show no debug
+  setting, so how it got the port is not known. The owner was told to
+  restart VSCodium.
+- The setup prompt without the app's photo shows a gradient and a line
+  icon instead of a grey block; README screenshots retaken (`vnu`
+  clean). The README lists the six desktop integrations the store
+  offers only for macOS and Windows (from the asar's
+  `desktop-agent-integrations/*/release.json` platforms).
+
 ## 2026-11-09 (owner confirmation)
 
 The repository owner confirmed on their desktop that Tiiny Music works

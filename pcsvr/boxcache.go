@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"maps"
 	"net/http"
 	"sync"
 	"time"
@@ -61,9 +62,7 @@ func (c *boxCache) serve(w http.ResponseWriter, r *http.Request, addr string) {
 		http.Error(w, "device unavailable", http.StatusBadGateway)
 		return
 	}
-	for k, v := range ans.header {
-		w.Header()[k] = v
-	}
+	maps.Copy(w.Header(), ans.header)
 	w.WriteHeader(ans.status)
 	_, _ = w.Write(ans.body)
 }
