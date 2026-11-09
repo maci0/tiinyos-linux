@@ -172,23 +172,35 @@ app.setVersion(appVersion);
 app.getVersion = () => appVersion;
 app.getAppPath = () => asar;
 
-// Agent integrations. The store's script bundles (under
-// ~/.tiinyai/desktop-agents/<app>/bundle) name a script per platform,
-// darwin and win32 only, and the app runs the one for process.platform
-// with /bin/sh. When the app reads a bundle manifest, this launcher's
-// integrations/<app>/ folder is copied into the bundle as linux/ (its
-// scripts call each other there), and each script gains a linux entry:
-// linux/<name> when that folder has it, else the darwin shell script.
+// Agent integrations. A store script bundle (under
+// ~/.tiinyai/desktop-agents/<app>/bundle) names its scripts per platform
+// ({darwin, win32}) or, in a macOS-only bundle that pcsvr offers on Linux
+// (see pcsvr/linuxstore.go), as plain names; the app runs the one for
+// process.platform with /bin/sh. When the app reads a bundle manifest,
+// this launcher's integrations/common/ and integrations/<app>/ are copied
+// into the bundle as linux/ (the scripts call each other there). A script
+// that folder has replaces the bundle's; otherwise a darwin shell script
+// is used as is.
 const AGENT_MANIFEST = /\/\.tiinyai\/desktop-agents\/([^/]+)\/bundle\/(?:[^/]+\/)?manifest\.json$/;
+const INTEGRATIONS = path.join(__dirname, "integrations");
 
 function withLinuxScripts(file, text) {
-  const own = path.join(__dirname, "integrations", file.match(AGENT_MANIFEST)[1]);
+  const own = path.join(INTEGRATIONS, file.match(AGENT_MANIFEST)[1]);
   const ownNames = fs.existsSync(own) ? fs.readdirSync(own) : [];
   if (ownNames.length > 0) {
-    fs.cpSync(own, path.join(path.dirname(file), "linux"), { recursive: true });
+    const linux = path.join(path.dirname(file), "linux");
+    fs.cpSync(path.join(INTEGRATIONS, "common"), linux, { recursive: true });
+    fs.cpSync(own, linux, { recursive: true });
   }
   const manifest = JSON.parse(text);
-  for (const entry of Object.values(manifest.scripts || {})) {
+  const scripts = manifest.scripts || {};
+  for (const [action, entry] of Object.entries(scripts)) {
+    if (typeof entry === "string") {
+      if (ownNames.includes(path.basename(entry))) {
+        scripts[action] = `linux/${path.basename(entry)}`;
+      }
+      continue;
+    }
     if (!entry || typeof entry !== "object" || entry.linux || typeof entry.darwin !== "string") {
       continue;
     }

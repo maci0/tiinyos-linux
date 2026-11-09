@@ -169,6 +169,9 @@ func deviceProxy(local *http.ServeMux) *httputil.ReverseProxy {
 		FlushInterval: -1,
 		ModifyResponse: func(resp *http.Response) error {
 			req := resp.Request
+			if resp.StatusCode == http.StatusOK && isStoreMetadata(req) {
+				return patchStoreMetadata(resp)
+			}
 			if resp.StatusCode < 400 {
 				return nil
 			}
