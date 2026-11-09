@@ -278,9 +278,12 @@ async function offerAPINames(force) {
   } catch {
     return;
   }
-  if (status.state === "needs_admin") {
+  // needs_capability: the /etc/hosts block is there, but a new pcsvr
+  // build lost the right to listen on port 80.
+  const mode = { needs_admin: "api", needs_capability: "api-update" }[status.state];
+  if (mode) {
     apiNamesOffered = true;
-    openSetup("api", setUpAPINames, () => fs.writeFileSync(apiNamesDismissed, ""));
+    openSetup(mode, setUpAPINames, () => fs.writeFileSync(apiNamesDismissed, ""));
   }
 }
 

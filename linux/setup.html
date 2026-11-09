@@ -62,6 +62,12 @@
       done: ["API names ready", "Other apps on this computer can now reach Tiiny's API."],
       failed: ["API names were not set up", "TiinyOS itself keeps working. You can try again from Settings, API Key.", "Try again", "Close"],
     },
+    "api-update": {
+      ask: ["Allow API names again", "TiinyOS was updated. openai.api.tiiny, anthropic.api.tiiny and ollama.api.tiiny are still set up on this computer; TiinyOS needs your administrator password once to answer them again.", "Allow", "Not now"],
+      working: ["Allowing API names", "Enter your password in the system prompt to continue."],
+      done: ["API names ready", "Other apps on this computer can reach Tiiny's API again."],
+      failed: ["API names were not allowed", "TiinyOS itself keeps working. You can try again from Settings, API Key.", "Try again", "Close"],
+    },
   };
   const params = new URLSearchParams(location.search);
   const mode = TEXT[params.get("mode")] || TEXT.usb;

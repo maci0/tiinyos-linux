@@ -9,6 +9,15 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (API names prompt after a pcsvr rebuild, 20:55)
+
+The owner reported being asked again after the previous push. Cause:
+that build changed pcsvr, and a rewritten file has no capability; the
+`/etc/hosts` block was intact. pcsvr now reports `needs_capability`
+for that case and the prompt says the names are still set up and only
+the permission is asked again (`setup.html?mode=api-update`, `vnu`
+clean, screenshot checked). Accepting runs the same pkexec helper.
+
 ## 2026-11-09 (API names: /etc/hosts first, capability kept, 20:50)
 
 Asked by the repository owner: check `/etc/hosts` before asking. pcsvr

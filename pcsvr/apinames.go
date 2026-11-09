@@ -155,7 +155,7 @@ func (a *apiNamesState) serve(handler http.Handler) {
 	}
 	listener, err := net.Listen("tcp", apiNamesAddr)
 	if err != nil {
-		a.set("needs_admin", err)
+		a.set("needs_capability", err) // hosts block in place; pcsvr was replaced
 		return
 	}
 	a.set("ready", nil)
