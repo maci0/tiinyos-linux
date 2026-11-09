@@ -135,10 +135,12 @@ fi
 # The pidfile holds the services of the last owner. A launcher killed
 # with SIGKILL leaves them running; the UI will not start against a
 # stale service on 60000, so they go. A PID is signalled only while
-# /proc shows it running a pcsvr from this directory.
+# /proc shows it running a pcsvr from this directory. cmdline, not exe:
+# pcsvr with cap_net_bind_service (API names) is not dumpable, so its
+# exe link is unreadable to the user.
 stop_pids() {
   for pid in "$@"; do
-    case "$(readlink "/proc/$pid/exe" 2>/dev/null)" in
+    case "$(tr '\0' '\n' <"/proc/$pid/cmdline" 2>/dev/null | head -n 1)" in
       "$ROOT"/pcsvr*) kill "$pid" 2>/dev/null || true ;;
     esac
   done

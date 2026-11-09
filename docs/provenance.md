@@ -9,6 +9,29 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (KiloCode integration, launcher stop fix, 20:40 to 20:47)
+
+The repository owner asked to make the agent integrations work and
+chose MIT for the license. The app's integration runner picks
+`manifest.scripts[action][process.platform]` (`J0` in
+`out/main/index.js`) and runs it with `/bin/sh`; the bundle manifests
+(`~/.tiinyai/desktop-agents/<app>/bundle/manifest.json`) name `darwin`
+and `win32` only, hence the minutely "Manifest does not provide
+detect" warning. `linux/main.js` now adds `linux` entries when the app
+reads such a manifest (the darwin `.sh`, or the launcher's
+`linux/integrations/<app>/<name>`). Under Xvfb with the box, the Agent
+Store listed KiloCode as the only desktop integration; it showed
+"Open"; clicking it started `cursor --open-url
+cursor:extension/kilocode.kilo-code`; the bundle got `linux/open.sh`;
+the last detect warning was 20:41:37, from the instance before. The
+extension install inside Cursor was not done.
+
+Found while restarting: quitting left the API pcsvr (with
+`cap_net_bind_service`) running, holding 60000. A process with file
+capabilities is not dumpable, so `readlink /proc/<pid>/exe` failed and
+`stop_pids` skipped it. `stop_pids` now matches `/proc/<pid>/cmdline`.
+A quit of the next (capability-less) instance stopped both services.
+
 ## 2026-11-09 (API names on the desktop, 20:33)
 
 The repository owner accepted the API-names prompt and the pkexec password

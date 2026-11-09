@@ -99,3 +99,16 @@ with `TIINY_APP_UPDATE=0`, which skips the update check.
 Tiiny's developer portal: <https://docs.dev.tiiny.ai/>. A public write-up
 of the device API:
 <https://github.com/thezolon/tiiny-studio/blob/main/docs/DEVICE-API.md>.
+
+## Agent integrations
+
+Desktop integrations from the Agent Store arrive as script bundles in
+`~/.tiinyai/desktop-agents/<app>/bundle`. Their manifests name a script
+per platform (`darwin`, `win32`), and the app runs the one for
+`process.platform` with `/bin/sh`. `linux/main.js` adds a `linux` entry
+when the app reads a manifest: the launcher's own script from
+`linux/integrations/<app>/` if there is one, else the macOS shell
+script. KiloCode works this way (its own `open.sh` asks the editor CLI
+to show the extension page). Tiiny's store lists only KiloCode on Linux;
+OpenCode, Goose, Pi, Hermes Agent, OpenClaw and Tiiny Meeting ship
+macOS and Windows builds only.

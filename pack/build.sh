@@ -22,6 +22,7 @@ mkdir -p "$STAGE/linux" "$STAGE/pack" "$ROOT/dist"
 cp "$ROOT/linux/tiinyos.sh" "$ROOT/linux/main.js" "$ROOT/linux/preload.js" "$ROOT/linux/setup.html" \
   "$ROOT/linux/pcsvr-api.yaml" "$ROOT/linux/compat.yaml" "$ROOT/linux/tiiny-usb.network" \
   "$STAGE/linux/"
+cp -r "$ROOT/linux/integrations" "$STAGE/linux/"
 cp "$ROOT/pack/fetch.py" "$ROOT/pack/extract.py" "$STAGE/pack/"
 python3 "$ROOT/pack/payload.py" "$STAGE" "$ROOT/repackage/payload.zip"
 (cd "$ROOT/repackage" && go build -buildvcs=false -o "$ROOT/dist/tiinyos" .)

@@ -172,6 +172,44 @@ app.setVersion(appVersion);
 app.getVersion = () => appVersion;
 app.getAppPath = () => asar;
 
+// Agent integrations. The store's script bundles (under
+// ~/.tiinyai/desktop-agents/<app>/bundle) name a script per platform,
+// darwin and win32 only, and the app runs the one for process.platform
+// with /bin/sh. When the app reads a bundle manifest, each script gains
+// a linux entry: this launcher's own script from integrations/<app>/
+// when there is one (copied into the bundle as linux/<name>), else the
+// darwin shell script.
+const AGENT_MANIFEST = /\/\.tiinyai\/desktop-agents\/([^/]+)\/bundle\/(?:[^/]+\/)?manifest\.json$/;
+
+function withLinuxScripts(file, text) {
+  const appDir = file.match(AGENT_MANIFEST)[1];
+  const manifest = JSON.parse(text);
+  for (const entry of Object.values(manifest.scripts || {})) {
+    if (!entry || typeof entry !== "object" || entry.linux || typeof entry.darwin !== "string") {
+      continue;
+    }
+    const name = path.basename(entry.darwin);
+    const own = path.join(__dirname, "integrations", appDir, name);
+    if (fs.existsSync(own)) {
+      const target = path.join(path.dirname(file), "linux", name);
+      fs.mkdirSync(path.dirname(target), { recursive: true });
+      fs.copyFileSync(own, target);
+      entry.linux = `linux/${name}`;
+    } else if (entry.darwin.endsWith(".sh")) {
+      entry.linux = entry.darwin;
+    }
+  }
+  return JSON.stringify(manifest);
+}
+
+const readFile = fs.promises.readFile;
+fs.promises.readFile = async function (file, options) {
+  const data = await readFile.call(this, file, options);
+  return typeof file === "string" && typeof data === "string" && AGENT_MANIFEST.test(file)
+    ? withLinuxScripts(file, data)
+    : data;
+};
+
 require(path.join(asar, "out", "main", "index.js"));
 
 // Setup prompts. pcsvr reports what it could not set up without admin
