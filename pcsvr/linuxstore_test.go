@@ -110,3 +110,18 @@ func TestStoreMetadataPatchedOnlyWhenPlain(t *testing.T) {
 		t.Fatal("unparseable body changed")
 	}
 }
+
+func TestLinuxIntegrationReusesNeutralDownload(t *testing.T) {
+	doc := `{"app":[{"app_id":"Openclaw","platforms":[{"name":"darwin-arm64","blob_url":"https://example/install.sh"}]}],
+"integration_body":[{"app_id":"Openclaw","platforms":[{"name":"darwin-arm64","artifact":{"version":"v2026.9.9","url":"https://example/install.sh"},"integration":{"bundle_url":"https://example/b.zip"}}]}]}`
+	out, added, err := withLinuxIntegrations([]byte(doc))
+	if err != nil || strings.Join(added, ",") != "Openclaw" {
+		t.Fatalf("added %v, err %v", added, err)
+	}
+	apps, bodies, _ := decodeStore(t, out)
+	linuxApp, linuxBody := apps[0].Platforms[1], bodies[0].Platforms[1]
+	if linuxApp.Name != linuxPlatform || linuxApp.BlobURL != "https://example/install.sh" ||
+		linuxBody.Name != linuxPlatform || linuxBody.Artifact["url"] != "https://example/install.sh" {
+		t.Fatalf("app %+v, body %+v", linuxApp, linuxBody)
+	}
+}

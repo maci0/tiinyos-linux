@@ -31,7 +31,8 @@ const (
 
 // linuxArtifact is a tool's official Linux build. bundleVersion is the
 // version of Tiiny's macOS bundle (its artifact.version) it pairs with;
-// version is the upstream release.
+// version is the upstream release. An entry without a url reuses the
+// macOS bundle's download, for a platform-neutral installer.
 type linuxArtifact struct {
 	appID, bundleVersion, version, filename, url, sha256 string
 	size                                                 int64
@@ -48,6 +49,8 @@ var linuxArtifacts = []linuxArtifact{
 		url:    "https://github.com/badlogic/pi-mono/releases/download/v0.84.4/pi-linux-x64.tar.gz",
 		sha256: "c2f3c3e6a1850bd87654cc3ca8811013272397c3d042a4e2a64c43ee1b423972", size: 42464648,
 	},
+	// The download is OpenClaw's own install script, which supports Linux.
+	{appID: "Openclaw", bundleVersion: "v2026.9.9"},
 }
 
 func isStoreMetadata(req *http.Request) bool {
@@ -187,6 +190,10 @@ func addLinuxIntegration(body map[string]json.RawMessage, art linuxArtifact) (bo
 	}
 	linux := maps.Clone(base)
 	setJSON(linux, "name", linuxPlatform)
+	if art.url == "" {
+		setJSON(body, "platforms", append(platforms, linux))
+		return true, nil
+	}
 	setJSON(linux, "artifact", map[string]any{
 		"filename": art.filename, "kind": "archive", "size": art.size, "url": art.url, "version": art.version,
 	})
@@ -214,6 +221,10 @@ func addLinuxAppPlatform(app map[string]json.RawMessage, art linuxArtifact) erro
 	}
 	linux := maps.Clone(base)
 	setJSON(linux, "name", linuxPlatform)
+	if art.url == "" {
+		setJSON(app, "platforms", append(platforms, linux))
+		return nil
+	}
 	setJSON(linux, "app_size", art.size)
 	setJSON(linux, "app_version", art.version)
 	setJSON(linux, "blob", art.filename)

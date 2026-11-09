@@ -1,0 +1,4 @@
+#!/bin/sh
+# macOS `open` for the bundle's scripts: opens a URL or file with the
+# desktop's default handler.
+exec xdg-open "$@"
