@@ -9,6 +9,15 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (KiloCode extension installed, 21:00)
+
+Installed the real extension into a throwaway HOME:
+`codium --extensions-dir <HOME>/.vscode/extensions --install-extension
+kilocode.kilo-code` installed `kilocode.kilo-code-7.8.27-linux-x64`,
+and the bundle's `extension/detect.sh` then exited 0. Cursor's AppImage
+launcher ignored `--install-extension` and opened its GUI instead, so
+Cursor was not used for this. The owner's own editors were not touched.
+
 ## 2026-11-09 (KiloCode scripts on Linux, 20:55)
 
 Ran the KiloCode bundle's scripts under `/bin/sh` with a throwaway HOME
