@@ -83,6 +83,13 @@ restarts itself and answers those three names, and only those, on
 is lost when an update replaces pcsvr, and the prompt comes back. To
 undo: delete the `tiinyos api names` block from `/etc/hosts`.
 
+Without that setup, the box's own mDNS names work on hosts that resolve
+`.local` (avahi with nss-mdns): `http://openai.api.tiiny.local/v1`,
+`http://anthropic.api.tiiny.local`, `http://ollama.api.tiiny.local`.
+The app's agent integrations (OpenCode, Goose, KiloCode and others)
+write the bare `openai.api.tiiny` into those tools' settings, so they
+need the setup above.
+
 The app hardcodes ports 60000, 60022 and 60053, which lie inside the
 default Linux ephemeral port range. A busy machine can briefly hold one
 for an outgoing connection, and a closed connection can keep it for the
