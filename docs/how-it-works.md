@@ -37,7 +37,8 @@ answers those names itself on its port 80; Linux just does not resolve
 them. pcsvr reads `/etc/hosts` first: if it already lists all three
 names (your own entries, any address), TiinyOS leaves them alone and
 never asks. Otherwise, once a box is connected, it offers to set them up
-("Not now" is remembered; the API Key page offers it again). One
+("Not now" waits for the next start or a visit to the API Key page;
+"Don't ask again" is final). One
 `pkexec` prompt writes a marked block pointing the names at the box's
 current address. pcsvr checks the block against discovery every 2 s;
 when the box turns up at another address (USB is always

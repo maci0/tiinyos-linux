@@ -263,10 +263,11 @@ async function setUpAPINames() {
   return result.state === "configured" ? waitForAPINames() : result;
 }
 
-// offerAPINames opens the prompt once per run. Without force it respects
-// an earlier "Not now" and waits for a connected box.
+// offerAPINames opens the prompt once per run, never after "Don't ask
+// again" (remembered in apiNamesDismissed). Without force it waits for a
+// connected box.
 async function offerAPINames(force) {
-  if (setupWindow || apiNamesOffered || (!force && fs.existsSync(apiNamesDismissed))) {
+  if (setupWindow || apiNamesOffered || fs.existsSync(apiNamesDismissed)) {
     return;
   }
   let status;
@@ -307,9 +308,8 @@ async function pollSetup() {
 }
 
 // openSetup shows setup.html in the given mode. run performs the setup
-// and resolves to pcsvr's answer; onDismiss runs when the user declines
-// before trying.
-function openSetup(mode, run, onDismiss = () => {}) {
+// and resolves to pcsvr's answer; onNever runs on "Don't ask again".
+function openSetup(mode, run, onNever = () => {}) {
   setupWindow = new BrowserWindow({
     width: 480,
     height: 440,
@@ -335,12 +335,11 @@ function openSetup(mode, run, onDismiss = () => {}) {
       win.webContents.executeJavaScript(`show(${JSON.stringify(state)}, ${JSON.stringify(detail)})`);
     }
   };
-  let tried = false;
   win.webContents.on("did-navigate-in-page", async (_event, url) => {
     const action = new URL(url).hash;
-    if (action === "#close") {
-      if (!tried) {
-        onDismiss();
+    if (action === "#close" || action === "#never") {
+      if (action === "#never") {
+        onNever();
       }
       win.close();
       return;
@@ -348,7 +347,6 @@ function openSetup(mode, run, onDismiss = () => {}) {
     if (action !== "#setup") {
       return;
     }
-    tried = true;
     show("working");
     const result = await run();
     if (result.state === "configured" || result.state === "ready") {
@@ -361,7 +359,7 @@ function openSetup(mode, run, onDismiss = () => {}) {
 }
 
 // The app's API Key page lists the API names; visiting it offers the
-// setup again even after "Not now".
+// setup again after "Not now" (not after "Don't ask again").
 app.on("web-contents-created", (_event, contents) => {
   contents.on("did-navigate-in-page", (_e, url) => {
     if (url.includes(API_KEY_ROUTE)) {

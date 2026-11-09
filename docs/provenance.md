@@ -9,6 +9,16 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (API names: Not now and Don't ask again, 21:15)
+
+The owner accepted "Update API names" at 21:10:53: `/etc/hosts` holds
+`172.29.41.121 openai.api.tiiny anthropic.api.tiiny ollama.api.tiiny`,
+all three answered 401 from the box, and nothing listened on port 80.
+The quit before it left no pcsvr running. Asked by the owner, the API
+names prompt now has "Not now" (that run only; the API Key page offers
+it again) and "Don't ask again" (remembered in `api-names-dismissed`,
+also honoured by the API Key page). `vnu` clean; screenshot updated.
+
 ## 2026-11-09 (API names without port 80, 21:15)
 
 The owner asked not to use port 80 after a restart left "address
