@@ -12,13 +12,14 @@ version, the launcher downloads the official build from Tiiny.
 
 ## Install
 
-Download `tiinyos` from the
-[latest release](https://github.com/maci0/tiinyos-linux/releases/latest),
-then:
-
 ```sh
+curl -fLo tiinyos https://github.com/maci0/tiinyos-linux/releases/latest/download/tiinyos
 chmod +x tiinyos && ./tiinyos
 ```
+
+Or download `tiinyos` from the
+[latest release](https://github.com/maci0/tiinyos-linux/releases/latest)
+(`SHA256SUMS` is attached).
 
 One 18 MB x86-64 executable, nothing else to install. It adds TiinyOS
 to the app menu, then downloads TiinyOS (about 140 MB, from Tiiny) and
@@ -26,6 +27,29 @@ Electron (110 MB, from its GitHub release) to `~/.local/share/tiinyos`.
 
 To build it yourself (Go 1.27, python3, curl, tar with xz):
 `pack/build.sh` writes `dist/tiinyos`.
+
+## Uninstall
+
+Quit TiinyOS from its tray icon, then:
+
+```sh
+rm -rf ~/.local/share/tiinyos            # app, Electron, launcher, profile
+rm -f ~/.local/share/applications/tiinyos.desktop
+rm -f ~/.config/autostart/tiiny-ai.desktop  # if "Auto start" was on
+rm -rf ~/.tiinyai                         # Agent Store integration bundles
+xdg-mime query default x-scheme-handler/tiinyai  # tiinyos.desktop? remove that
+                                          # line from ~/.config/mimeapps.list
+```
+
+If you set up the API names, delete the block between
+`# tiinyos api names begin` and `# tiinyos api names end` in
+`/etc/hosts` (`sudoedit /etc/hosts`). If NetworkManager set up the USB
+link, remove its profile: `nmcli connection delete` with the
+`tiiny-usb-<mac>` name that `nmcli connection show` lists. KiloCode, if
+installed from the Agent Store, stays in your editor; remove it there,
+`~/.config/kilo` and `~/.local/share/kilo` hold its Tiiny settings, and
+the editor's `settings.json` has `kilo-code.new.model.providerID` and
+`modelID` set to `tiiny` and `default`.
 
 ## What it adds
 
