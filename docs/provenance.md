@@ -9,6 +9,11 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (owner confirmation)
+
+The repository owner confirmed on their desktop that Tiiny Music works
+(with a text model loaded) and that KiloCode answers in VSCodium.
+
 ## 2026-11-09 (KiloCode from the desktop app, 21:12)
 
 On the owner's KDE desktop (TiinyOS restarted on the build with the
