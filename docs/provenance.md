@@ -9,6 +9,20 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (API names: /etc/hosts first, capability kept, 20:50)
+
+Asked by the repository owner: check `/etc/hosts` before asking. pcsvr
+now reports `external` and never prompts when `/etc/hosts` lists all
+three names outside its block (`TestNamesInHosts`; in `unshare -rnm`
+with them mapped to 172.29.41.121, `/pcsvr/api-names` said `external`
+and nothing listened on port 80). The self-extractor no longer deletes
+the launcher tree on update: it rewrites only changed files (by
+temporary file and rename) and removes files the payload dropped, so an
+unchanged pcsvr keeps `cap_net_bind_service` (`TestExtractKeepsUnchangedFiles`:
+same inode for an unchanged file). Headless Chromium on
+`tiinymusic.agent.tiiny.local` showed Qwen3.6-35B-A3B selected once the
+owner had loaded it; the "Select an LLM model" toast was gone.
+
 ## 2026-11-09 (KiloCode integration, launcher stop fix, 20:40 to 20:47)
 
 The repository owner asked to make the agent integrations work and

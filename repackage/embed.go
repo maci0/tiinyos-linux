@@ -5,11 +5,18 @@ import (
 	"bytes"
 	_ "embed"
 	"errors"
+	"hash/crc32"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 )
 
+// extractPayload writes over the previous tree. A file whose content is
+// unchanged is left alone, so pcsvr keeps the cap_net_bind_service it
+// got for the API names (rewriting a file drops its capability); a file
+// the payload no longer has is removed.
+//
 // payload.zip is produced by pack/build.sh. It holds linux/ and pack/
 // files of this project only, never Tiiny's app or Electron.
 //
@@ -21,8 +28,10 @@ func extractPayload(dir string) error {
 	if err != nil {
 		return err
 	}
+	want := map[string]bool{filepath.Join(dir, ".payload"): true}
 	for _, file := range reader.File {
 		target := filepath.Join(dir, file.Name)
+		want[target] = true
 		if !inside(dir, target) {
 			return errors.New("payload path escapes the unpack directory")
 		}
@@ -35,13 +44,18 @@ func extractPayload(dir string) error {
 		if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
 			return err
 		}
+		if unchanged(target, file) {
+			continue
+		}
 		mode := file.Mode()
 		if mode&0o111 != 0 {
 			mode = 0o755
 		} else {
 			mode = 0o644
 		}
-		out, err := os.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, mode)
+		// Replaced by rename: a running pcsvr cannot be written in place.
+		temp := target + ".new"
+		out, err := os.OpenFile(temp, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, mode)
 		if err != nil {
 			return err
 		}
@@ -59,8 +73,22 @@ func extractPayload(dir string) error {
 		if closeErr != nil {
 			return closeErr
 		}
+		if err := os.Rename(temp, target); err != nil {
+			return err
+		}
 	}
-	return nil
+	return filepath.WalkDir(dir, func(path string, entry fs.DirEntry, err error) error {
+		if err != nil || entry.IsDir() || want[path] {
+			return err
+		}
+		return os.Remove(path)
+	})
+}
+
+// unchanged reports whether target already holds file's bytes.
+func unchanged(target string, file *zip.File) bool {
+	data, err := os.ReadFile(target)
+	return err == nil && uint64(len(data)) == file.UncompressedSize64 && crc32.ChecksumIEEE(data) == file.CRC32
 }
 
 func inside(root, target string) bool {

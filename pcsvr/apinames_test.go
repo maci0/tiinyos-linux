@@ -32,3 +32,20 @@ func TestNetBindCapability(t *testing.T) {
 		t.Fatalf("% x", b)
 	}
 }
+
+func TestNamesInHosts(t *testing.T) {
+	cases := map[string]bool{
+		"": false,
+		"172.29.41.121 openai.api.tiiny anthropic.api.tiiny ollama.api.tiiny\n":    true,
+		"10.0.0.5 OpenAI.api.tiiny\n10.0.0.5 anthropic.api.tiiny ollama.api.tiiny": true,
+		"# 10.0.0.5 openai.api.tiiny anthropic.api.tiiny ollama.api.tiiny\n":       false,
+		"10.0.0.5 openai.api.tiiny anthropic.api.tiiny\n":                          false,
+		"openai.api.tiiny 10.0.0.5\n10.0.0.5 anthropic.api.tiiny ollama.api.tiiny": false,
+		hostsBlock(): true,
+	}
+	for hosts, want := range cases {
+		if got := namesInHosts(hosts); got != want {
+			t.Errorf("namesInHosts(%q) = %v", hosts, got)
+		}
+	}
+}

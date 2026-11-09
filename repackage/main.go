@@ -47,9 +47,6 @@ func ensurePayload(dir string) error {
 	if existing, err := os.ReadFile(marker); err == nil && string(existing) == stamp {
 		return nil
 	}
-	if err := os.RemoveAll(dir); err != nil {
-		return err
-	}
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}

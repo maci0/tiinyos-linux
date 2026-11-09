@@ -101,31 +101,64 @@ func configureAPINames() error {
 
 type apiNamesState struct {
 	mu    sync.Mutex
-	ready bool
+	state string
 	err   string
 }
 
-// serve listens on apiNamesAddr when pcsvr has the capability and the
-// hosts block is current; otherwise it records why not.
-func (a *apiNamesState) serve(handler http.Handler) {
-	hosts, err := os.ReadFile(hostsPath)
-	if err == nil && !strings.Contains(string(hosts), hostsBlock()) {
-		err = errors.New("the /etc/hosts block is missing")
-	}
-	var listener net.Listener
-	if err == nil {
-		listener, err = net.Listen("tcp", apiNamesAddr)
-	}
+func (a *apiNamesState) set(state string, err error) {
 	a.mu.Lock()
-	a.ready = err == nil
+	defer a.mu.Unlock()
+	a.state, a.err = state, ""
 	if err != nil {
 		a.err = err.Error()
-	}
-	a.mu.Unlock()
-	if err != nil {
-		log.Printf("api names: %v", err)
+		log.Printf("api names: %s: %v", state, err)
 		return
 	}
+	log.Printf("api names: %s", state)
+}
+
+// namesInHosts reports whether every API name has a line in hosts,
+// comments aside: set up by hand or by another tool.
+func namesInHosts(hosts string) bool {
+	listed := map[string]bool{}
+	for _, line := range strings.Split(hosts, "\n") {
+		line, _, _ = strings.Cut(line, "#")
+		fields := strings.Fields(line)
+		for i := 1; i < len(fields); i++ {
+			listed[strings.ToLower(fields[i])] = true
+		}
+	}
+	for _, name := range apiNames {
+		if !listed[name] {
+			return false
+		}
+	}
+	return true
+}
+
+// serve listens on apiNamesAddr when the hosts block is current and
+// pcsvr has the capability. Names that /etc/hosts already lists some
+// other way are left to that entry (state external, no prompt).
+func (a *apiNamesState) serve(handler http.Handler) {
+	data, err := os.ReadFile(hostsPath)
+	hosts := string(data)
+	switch {
+	case err != nil:
+		a.set("needs_admin", err)
+		return
+	case !strings.Contains(hosts, hostsBlock()) && namesInHosts(hosts):
+		a.set("external", nil)
+		return
+	case !strings.Contains(hosts, hostsBlock()):
+		a.set("needs_admin", errors.New("the /etc/hosts block is missing"))
+		return
+	}
+	listener, err := net.Listen("tcp", apiNamesAddr)
+	if err != nil {
+		a.set("needs_admin", err)
+		return
+	}
+	a.set("ready", nil)
 	log.Printf("api names: listening on %s", apiNamesAddr)
 	onlyNames := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Port 80 serves only the API names, never the local endpoints.
@@ -144,10 +177,7 @@ func (a *apiNamesState) serve(handler http.Handler) {
 func (a *apiNamesState) status() map[string]any {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	if a.ready {
-		return map[string]any{"state": "ready", "names": apiNames}
-	}
-	return map[string]any{"state": "needs_admin", "names": apiNames, "error": a.err}
+	return map[string]any{"state": a.state, "names": apiNames, "error": a.err}
 }
 
 // setupWithAdmin runs the root helper through pkexec, then re-executes
