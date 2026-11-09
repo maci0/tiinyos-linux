@@ -9,6 +9,15 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (API names kept across restarts, 20:52)
+
+The owner accepted the "Allow API names again" prompt at 20:51:57
+(`getcap`: `cap_net_bind_service=ep`; the three names answered 401
+from the box). Quitting TiinyOS (TERM to Electron) then left no pcsvr
+running, so `stop_pids` now stops a pcsvr that has the capability.
+Starting `dist/tiinyos` again reported `ready` at once, with no prompt,
+and `openai.api.tiiny` answered 401.
+
 ## 2026-11-09 (API names prompt after a pcsvr rebuild, 20:55)
 
 The owner reported being asked again after the previous push. Cause:
