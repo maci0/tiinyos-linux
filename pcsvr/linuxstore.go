@@ -29,16 +29,24 @@ const (
 	maxStoreMetadata  = 8 << 20
 )
 
+// linuxArtifact is a tool's official Linux build. bundleVersion is the
+// version of Tiiny's macOS bundle (its artifact.version) it pairs with;
+// version is the upstream release.
 type linuxArtifact struct {
-	appID, version, filename, url, sha256 string
-	size                                  int64
+	appID, bundleVersion, version, filename, url, sha256 string
+	size                                                 int64
 }
 
 var linuxArtifacts = []linuxArtifact{
 	{
-		appID: "opencode", version: "v1.18.35", filename: "opencode-linux-x64.tar.gz",
+		appID: "opencode", bundleVersion: "v1.18.35", version: "v1.18.35", filename: "opencode-linux-x64.tar.gz",
 		url:    "https://github.com/anomalyco/opencode/releases/download/v1.18.35/opencode-linux-x64.tar.gz",
 		sha256: "c8f888b451f5494a18f858fffb0e0b68f4e4baa9c241761c5f206884f0fa640d", size: 60669097,
+	},
+	{
+		appID: "pi", bundleVersion: "v1.1.0", version: "v0.84.4", filename: "pi-linux-x64.tar.gz",
+		url:    "https://github.com/badlogic/pi-mono/releases/download/v0.84.4/pi-linux-x64.tar.gz",
+		sha256: "c2f3c3e6a1850bd87654cc3ca8811013272397c3d042a4e2a64c43ee1b423972", size: 42464648,
 	},
 }
 
@@ -173,8 +181,8 @@ func addLinuxIntegration(body map[string]json.RawMessage, art linuxArtifact) (bo
 		Version string `json:"version"`
 	}
 	json.Unmarshal(base["artifact"], &baseArtifact)
-	if baseArtifact.Version != art.version {
-		log.Printf("store: %s bundle is %s, Linux build pinned at %s; no Linux entry", art.appID, baseArtifact.Version, art.version)
+	if baseArtifact.Version != art.bundleVersion {
+		log.Printf("store: %s bundle is %s, Linux build pinned for %s; no Linux entry", art.appID, baseArtifact.Version, art.bundleVersion)
 		return false, nil
 	}
 	linux := maps.Clone(base)
