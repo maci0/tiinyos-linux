@@ -9,6 +9,21 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (API names on the desktop, 20:33)
+
+The repository owner accepted the API-names prompt and the pkexec password
+prompt on the KDE desktop. pcsvr logged "configured, restarting" and
+"listening on 127.0.0.1:80" at 20:33:29; `getcap` shows
+`cap_net_bind_service=ep`; `getent hosts openai.api.tiiny` gives
+127.0.0.1. `curl` from a shell: `openai.api.tiiny/v1/models`,
+`anthropic.api.tiiny/v1/messages` and `ollama.api.tiiny/api/tags`
+answered 401 (the box's missing-token reply), `Host: example.com` on
+port 80 answered 404. The box stayed listed (`device_count` 1) and the
+app logged no new warning or error through 20:34 apart from the box's
+KiloCode manifest warning. The restart path was also run in
+`unshare -rnm` with a stand-in pkexec (`.scratch/apirestart.sh`): same
+PID after the re-exec, state `ready`.
+
 ## 2026-11-09 (API names for other programs, 20:45)
 
 Asked by the repository owner ("do the api names ... just askpass").
