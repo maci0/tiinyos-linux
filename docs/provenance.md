@@ -9,6 +9,35 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (clean reinstall; tiinyai:// handler, 23:12 to 23:27)
+
+The owner asked to remove the install and every leftover, run the README
+install, then remove their earlier Wine and Faugus attempts. Removed by
+exact path (processes stopped by PID first): `~/.local/share/tiinyos`,
+`~/.tiinyai`, the menu and autostart entries, each integration's files,
+the KiloCode extension and the test-created VSCodium `settings.json`,
+the `tiiny-usb-*` NetworkManager profile and the `/etc/hosts` block
+(pkexec). Files that predated today (OpenCode `opencode.jsonc`, Pi
+extensions and skills, the rest of `~/Library`) were kept; Pi's
+`auth.json` went back to `{}`. The README install (`curl -fLo tiinyos
+.../releases/latest/download/tiinyos`, sha256 matching v0.3.0's
+`SHA256SUMS`) had the app up in 18 s; pcsvr recreated the NetworkManager
+profile without a prompt, found the box at 172.29.41.121, and the owner
+accepted the API names prompt (block written 23:18:09). The Wine
+install was removed from the shared `~/.wine` (program and data
+folders, Start Menu link, registry keys via `wine reg delete`), the
+`~/Faugus/tiinyos` prefix and its `games.json` entry (Battle.net kept),
+the Wine menu entries and icons, and both downloaded Windows installers.
+
+The owner asked whether the launcher sets the `tiinyai://` handler: it
+does (`tiinyos.desktop` has `MimeType=x-scheme-handler/tiinyai`;
+`xdg-mime query default x-scheme-handler/tiinyai` gives
+`tiinyos.desktop` through `mimeinfo.cache`). `xdg-open
+'tiinyai://tray-panel/?presentation=tray-only'` started `tiinyos.sh`
+with the URL, which ran Electron with it; the running app receives it
+through `second-instance`. A fresh profile logs only warnings, so the
+hand-over was not seen in the app log.
+
 ## 2026-11-09 (Cline on Linux; README status table, 23:00 to 23:10)
 
 The owner confirmed Goose works and asked to try Cline. Tiiny's macOS
