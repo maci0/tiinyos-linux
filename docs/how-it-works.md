@@ -108,13 +108,32 @@ of the device API:
 
 ## Agent integrations
 
-Desktop integrations from the Agent Store arrive as script bundles
-in `~/.tiinyai/desktop-agents/<app>/bundle`. Their manifests name a
-script per platform (`darwin`, `win32`), and the app runs the one for
-`process.platform` with `/bin/sh`. `linux/main.js` adds a `linux`
-entry when the app reads a manifest: the launcher's own script from
-`linux/integrations/<app>/` (copied into the bundle as `linux/`) if
-there is one, else the macOS shell script. KiloCode works this way; its
-Linux scripts also find VSCodium (`codium`, `~/.vscode-oss`). Tiiny's
-store lists only KiloCode on Linux; OpenCode, Goose, Pi, Hermes Agent,
-OpenClaw and Tiiny Meeting ship macOS and Windows builds only.
+Desktop integrations from the Agent Store arrive as script bundles in
+`~/.tiinyai/desktop-agents/<app>/bundle`; the app runs each script with
+`/bin/sh`, picking it by `process.platform` when the manifest names one
+per platform. The store metadata comes from the box
+(`agent-services /api/services/apps/metadata`) and lists macOS and
+Windows platforms only.
+
+- pcsvr (`pcsvr/linuxstore.go`) adds a `linux-x86-64` platform for each
+  tool with an official Linux build: Tiiny's macOS script bundle, with
+  the tool download pointed at the pinned upstream release (OpenCode
+  `opencode-linux-x64.tar.gz`, Pi `pi-linux-x64.tar.gz`, Goose
+  `goose_<v>_amd64.deb`, all with size and sha256) or, for OpenClaw,
+  its platform-neutral installer as is. An entry is added only while
+  Tiiny's bundle is for the version the Linux build is pinned to.
+- `linux/main.js` copies `linux/integrations/common/` and
+  `linux/integrations/<app>/` into the bundle as `linux/` and points the
+  manifest at those scripts where the macOS ones cannot run (terminal
+  and browser launch, `.app` bundles); the rest of Tiiny's scripts and
+  their `runtime.js` and `configure.js` run unchanged from the bundle,
+  which every user downloads from Tiiny. Goose's `.deb` is unpacked
+  with the bundled 7-Zip (`TIINY_7ZZ`) into the integration directory.
+- Scripts and the tools they start get the user's own `XDG_*`
+  directories (`TIINY_USER_XDG_*` from `tiinyos.sh`), not TiinyOS's
+  private ones.
+
+Hermes Agent and Tiiny Meeting have no Linux build. Cline has one
+(`desktop-v0.0.48`), but Tiiny's setup configures it through macOS-only
+paths (WebKit localStorage under `~/Library`, PlistBuddy, `hdiutil`,
+`/Applications`); a Linux version of that setup was not written.

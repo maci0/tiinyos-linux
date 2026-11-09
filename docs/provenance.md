@@ -9,6 +9,58 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (Agent Store integrations on Linux, 22:00 to 22:55)
+
+The owner chose to add the integrations that have official Linux
+builds. The box's store metadata (`agent-services
+/api/services/apps/metadata`, served by box OS 0.1.39, plain JSON)
+lists `integration_body` platforms per tool, each with a script bundle
+(`bundle_url`, sha256, size) and an `artifact`; only darwin and windows
+platforms exist. `pcsvr/linuxstore.go` now adds `linux-x86-64` to the
+app list and `integration_body` for: OpenCode (upstream
+`opencode-linux-x64.tar.gz` v1.18.35, GitHub digest
+`c8f888b4...`), Pi (`badlogic/pi-mono` v0.84.4 `pi-linux-x64.tar.gz`,
+`c2f3c3e6...`, for Tiiny bundle v1.1.0), Goose (`aaif-goose/goose`
+v1.54.0 `goose_1.54.0_amd64.deb`, `3ae99bae...`) and OpenClaw (its
+own install script, which handles Linux, reused as is). Each entry keeps
+Tiiny's macOS script bundle and is added only while that bundle's
+artifact version is the pinned one (`TestLinuxIntegration*`).
+`linux/main.js` copies `linux/integrations/common` and `<app>/` into the
+bundle and replaces the scripts that need macOS (Terminal/`osascript`,
+`open`, `.app`, `ditto`); Tiiny's `runtime.js`/`configure.js` run
+unchanged (read: no platform branch other than win32 for OpenCode and
+Pi).
+
+Checked on the owner's desktop through the Agent Store (DevTools on
+loopback for the clicks): each showed the Linux size, Get installed it,
+Open started it. OpenCode 1.18.35 in Konsole, and `opencode run -m
+hardware-box/default` answered "opencode ok" through the box (with
+separate XDG dirs: the owner's own OpenCode database is from another
+version and fails with "Database is not empty and has no session
+table"). Pi 0.84.4 in Konsole; `pi --provider hardware-box -p` answered
+"pi ok". OpenClaw 2026.9.9 installed by its script (Node 24.21.0 under
+`~/.openclaw`), the gateway started and a dashboard client connected;
+`openclaw agent --agent main -m` answered "openclaw ok". Goose 1.54.0
+unpacked from the `.deb` (7-Zip skips one absolute symlink, unused) and
+started from Open; its process had the owner's own XDG environment and
+`~/.config/goose/config.yaml` pointed at `http://openai.api.tiiny`; a
+Goose chat answer was not checked. For desktop apps the app shows
+"Manual uninstall required" instead of uninstalling.
+
+Found on the way: tiinyos.sh's private `XDG_*` reached integration
+scripts and the tools they start (Goose's menu entry landed in the
+profile, Kilo's data dir and the editor settings would have too).
+`main.js` now wraps `child_process.spawn` for `/bin/sh` runs of
+`~/.tiinyai/desktop-agents/` scripts and restores `TIINY_USER_XDG_*`.
+Also, with TiinyOS started with `--remote-debugging-port`, processes the
+scripts start inherit the DevTools listening socket (port 9223 was held
+by OpenClaw's node, as 9222 had been by VSCodium); normal starts have no
+such port. OpenClaw's own `open.sh` stops gateways with `pkill -f
+'[o]penclaw.*gateway'`, which also matched (and killed) a shell whose
+command line contained that text. Cline (`desktop-v0.0.48` has Linux
+`.deb`s) was not added: Tiiny's setup writes into macOS WebKit storage
+and uses `/Applications`, PlistBuddy and `hdiutil`.
+
 ## 2026-11-09 (owner confirmation: Kilo default model)
 
 The repository owner confirmed that Kilo Code in VSCodium now works

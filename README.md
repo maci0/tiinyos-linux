@@ -49,7 +49,13 @@ link, remove its profile: `nmcli connection delete` with the
 installed from the Agent Store, stays in your editor; remove it there,
 `~/.config/kilo` and `~/.local/share/kilo` hold its Tiiny settings, and
 the editor's `settings.json` has `kilo-code.new.model.providerID` and
-`modelID` set to `tiiny` and `default`.
+`modelID` set to `tiiny` and `default`. The other integrations keep their
+files under `~/.tiinyai/desktop-agents` (removed above), plus: OpenCode
+`~/.opencode` and a `hardware-box` provider in
+`~/.config/opencode/opencode.json`; Pi a `hardware-box` provider in
+`~/.pi/agent`; OpenClaw `~/.openclaw`; Goose
+`~/.local/share/applications/tiiny-goose.desktop` and its settings in
+`~/.config/goose`.
 
 ## What it adds
 
@@ -65,8 +71,12 @@ the editor's `settings.json` has `kilo-code.new.model.providerID` and
   `openai.api.tiiny`, `anthropic.api.tiiny` and `ollama.api.tiiny` to
   `/etc/hosts`, pointing at the box; skipped if they are already there.
   The box's mDNS names (`openai.api.tiiny.local`) work without it.
-- **KiloCode** from the Agent Store in VS Code, Cursor or VSCodium, set
-  up to use the box's models.
+- **Agent Store integrations on Linux**, set up to use the box's models:
+  KiloCode (VS Code, Cursor or VSCodium), OpenCode, Pi and OpenClaw
+  (each opens in your terminal or browser) and Goose (desktop app).
+  OpenCode, Pi and Goose come from their projects' official Linux
+  releases, OpenClaw from its own installer, KiloCode from the editor's
+  extension store.
 - **Switching** between USB and Wi-Fi while the app runs, with no restart.
 
 In the app, the prompts show the box photo from the downloaded TiinyOS.
@@ -80,18 +90,15 @@ Details: [docs/how-it-works.md](docs/how-it-works.md).
 
 ## Missing on Linux
 
-Tiiny's Agent Store offers these desktop integrations for macOS and
-Windows only (their downloads are macOS and Windows builds), so the
-store does not list them on Linux:
+Tiiny's Agent Store offers its desktop integrations for macOS and
+Windows. This port adds Linux entries for the ones with an official
+Linux build (see above). These three stay unavailable:
 
-| Integration | Kind |
+| Integration | Why |
 |---|---|
-| OpenCode | CLI |
-| Goose | desktop app |
-| Pi | CLI |
-| Hermes Agent | desktop app |
-| OpenClaw | CLI |
-| Tiiny Meeting | desktop app |
+| Hermes Agent | Tiiny's own app; no Linux build |
+| Tiiny Meeting | Tiiny's own app; no Linux build |
+| Cline | Linux build exists; Tiiny's setup for it is macOS-only (WebKit storage, `/Applications`) and has no Linux version yet |
 
 Apps that run on the box itself (Tiiny Music, n8n, Open WebUI,
 OpenHands and the rest) do not depend on this port; Tiiny Music was
