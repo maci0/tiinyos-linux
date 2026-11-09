@@ -9,6 +9,16 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (KiloCode scripts on Linux, 20:55)
+
+Ran the KiloCode bundle's scripts under `/bin/sh` with a throwaway HOME
+(the owner's editors untouched): `extension/detect.sh` exited 1, then 0
+once `~/.cursor/extensions/kilocode.kilo-code-4.122.1` existed;
+`extension/configure.sh` (TiinyOS's Electron as Node) exited 0 and wrote
+`~/.config/kilo/kilo.jsonc` with a `tiiny` provider at
+`http://openai.api.tiiny/v1`, the name the API-names setup resolves.
+The extension install inside an editor was not done.
+
 ## 2026-11-09 (API names kept across restarts, 20:52)
 
 The owner accepted the "Allow API names again" prompt at 20:51:57
