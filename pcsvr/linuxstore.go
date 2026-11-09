@@ -49,6 +49,11 @@ var linuxArtifacts = []linuxArtifact{
 		url:    "https://github.com/badlogic/pi-mono/releases/download/v0.84.4/pi-linux-x64.tar.gz",
 		sha256: "c2f3c3e6a1850bd87654cc3ca8811013272397c3d042a4e2a64c43ee1b423972", size: 42464648,
 	},
+	{
+		appID: "goose", bundleVersion: "v1.54.0", version: "v1.54.0", filename: "goose_1.54.0_amd64.deb",
+		url:    "https://github.com/aaif-goose/goose/releases/download/v1.54.0/goose_1.54.0_amd64.deb",
+		sha256: "3ae99baeb83b5544571e4a443952a81a11b27de97964ad5c4dce10334cf83f0a", size: 167300616,
+	},
 	// The download is OpenClaw's own install script, which supports Linux.
 	{appID: "Openclaw", bundleVersion: "v2026.9.9"},
 }

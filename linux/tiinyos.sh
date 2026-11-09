@@ -84,6 +84,12 @@ export DOTENV_CONFIG_QUIET=true
 mkdir -p "$TIINY_DATA_DIR/config" "$TIINY_DATA_DIR/share" "$TIINY_DATA_DIR/state" "$TIINY_DATA_DIR/cache"
 # electron-store and Chromium both follow XDG and ignore app.setPath
 # for at least one directory (tiiny-ai under XDG_CONFIG_HOME).
+# The user's own values stay in TIINY_USER_XDG_*: main.js gives them
+# back to Agent Store integration scripts and the tools they start.
+if [ -n "${XDG_CONFIG_HOME-}" ]; then export TIINY_USER_XDG_CONFIG_HOME="$XDG_CONFIG_HOME"; fi
+if [ -n "${XDG_DATA_HOME-}" ]; then export TIINY_USER_XDG_DATA_HOME="$XDG_DATA_HOME"; fi
+if [ -n "${XDG_STATE_HOME-}" ]; then export TIINY_USER_XDG_STATE_HOME="$XDG_STATE_HOME"; fi
+if [ -n "${XDG_CACHE_HOME-}" ]; then export TIINY_USER_XDG_CACHE_HOME="$XDG_CACHE_HOME"; fi
 export XDG_CONFIG_HOME="$TIINY_DATA_DIR/config"
 export XDG_DATA_HOME="$TIINY_DATA_DIR/share"
 export XDG_STATE_HOME="$TIINY_DATA_DIR/state"

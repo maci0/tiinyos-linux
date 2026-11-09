@@ -183,6 +183,30 @@ app.getAppPath = () => asar;
 // is used as is.
 const AGENT_MANIFEST = /\/\.tiinyai\/desktop-agents\/([^/]+)\/bundle\/(?:[^/]+\/)?manifest\.json$/;
 const INTEGRATIONS = path.join(__dirname, "integrations");
+// Integration scripts that unpack a .deb use the launcher's 7-Zip.
+process.env.TIINY_7ZZ = path.join(__dirname, "7zz");
+
+// The app runs with private XDG directories (tiinyos.sh); integration
+// scripts, and the tools they configure and start, get the user's own
+// (TIINY_USER_XDG_*, unset when the user had none). The app's runner
+// starts each script as /bin/sh <bundle script>.
+const childProcess = require("node:child_process");
+const XDG_VARS = ["XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_CACHE_HOME"];
+const AGENT_SCRIPT = /\/\.tiinyai\/desktop-agents\//;
+const spawn = childProcess.spawn;
+childProcess.spawn = function (command, args, options) {
+  if (command === "/bin/sh" && Array.isArray(args) && AGENT_SCRIPT.test(String(args[0])) && options?.env) {
+    const env = { ...options.env };
+    for (const name of XDG_VARS) {
+      delete env[name];
+      if (process.env[`TIINY_USER_${name}`]) {
+        env[name] = process.env[`TIINY_USER_${name}`];
+      }
+    }
+    return spawn.call(this, command, args, { ...options, env });
+  }
+  return spawn.call(this, command, args, options);
+};
 
 function withLinuxScripts(file, text) {
   const own = path.join(INTEGRATIONS, file.match(AGENT_MANIFEST)[1]);
