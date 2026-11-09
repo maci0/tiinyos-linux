@@ -36,15 +36,15 @@ page and its agent integrations give out: `http://openai.api.tiiny/v1`,
 answers those names itself on its port 80; Linux just does not resolve
 them. pcsvr reads `/etc/hosts` first: if it already lists all three
 names (your own entries, any address), TiinyOS leaves them alone and
-never asks. Otherwise, once a box is connected, it offers to set them up
-("Not now" waits for the next start or a visit to the API Key page;
-"Don't ask again" is final). One
-`pkexec` prompt writes a marked block pointing the names at the box's
-current address. pcsvr checks the block against discovery every 2 s;
-when the box turns up at another address (USB is always
-172.29.41.121, Wi-Fi is whatever the router gives it), TiinyOS offers
-to update the block. Nothing listens on port 80 on this computer. To
-undo: delete the `tiinyos api names` block from `/etc/hosts`.
+never asks. Otherwise, once a box is connected, it offers to set them
+up ("Not now" waits for the next start or a visit to the API Key page;
+"Don't ask again" is final). One `pkexec` prompt writes a marked block
+pointing the names at the box's current address. pcsvr checks the block
+against discovery every 2 s; when the box turns up at another address
+(USB is always 172.29.41.121, Wi-Fi is whatever the router gives it),
+TiinyOS offers to update the block. Nothing listens on port 80 on
+this computer. To undo: delete the `tiinyos api names` block from
+`/etc/hosts`.
 
 Without that setup, the box's own mDNS names work on hosts that resolve
 `.local` (avahi with nss-mdns): `http://openai.api.tiiny.local/v1`,
