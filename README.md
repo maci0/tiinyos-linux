@@ -44,10 +44,10 @@ then downloads TiinyOS (about 140 MB) and Electron (110 MB) to
 
 ## Status
 
-Tested with TiinyOS 1.0.3 and a real box under Xvfb and on KDE
-Wayland: chat, model store, dashboard, vault, history, agent store,
-settings, box OS update, power cycles, USB and Wi-Fi, the KiloCode
-integration (VS Code or Cursor). Not ported: OCR (no Linux build of its
+Tested with TiinyOS 1.0.3 and a real box under Xvfb and on KDE Wayland:
+chat, model store, dashboard, vault, history, agent store, settings,
+box OS update, power cycles, USB and Wi-Fi, the KiloCode integration
+(VS Code, Cursor or VSCodium). Not ported: OCR (no Linux build of its
 addon). Tiiny's store offers its other agent integrations (OpenCode,
 Goose and the rest) for macOS and Windows only. x64 only. Details:
 [docs/how-it-works.md](docs/how-it-works.md).

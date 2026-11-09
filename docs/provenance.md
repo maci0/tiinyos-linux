@@ -9,6 +9,21 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (KiloCode in VSCodium, 21:10)
+
+The owner confirmed Tiiny Music works on the desktop and asked for the
+KiloCode plugin in their VSCodium. The bundle's scripts search only VS
+Code, VS Code Insiders and Cursor. Added Linux `find-editor.sh`,
+`detect.sh`, `preflight.sh`, `install.sh`, `open.sh` and `uninstall.sh`
+under `linux/integrations/KiloCode-Tiiny/` that also cover `codium` and
+`~/.vscode-oss/extensions`; `main.js` copies the folder into the bundle
+as `linux/`. With a throwaway HOME, detect exited 1 (empty), 0
+(installed), 1 (listed in `.obsolete`). `codium --install-extension
+kilocode.kilo-code` installed v7.8.27 in the owner's VSCodium. After
+the rebuild and restart the bundle held the new `linux/` scripts and
+its `detect.sh` exited 0. The API names stayed `ready` through that
+update with `cap_net_bind_service` still on the unchanged pcsvr.
+
 ## 2026-11-09 (KiloCode extension installed, 21:00)
 
 Installed the real extension into a throwaway HOME:
