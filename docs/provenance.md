@@ -9,6 +9,14 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (Goose answers through the box, 22:58)
+
+The Goose 1.54.0 install from the Agent Store ships its CLI at
+`app/usr/lib/goose/resources/bin/goose`; with the `~/.config/goose`
+config that TiinyOS's Open wrote, `goose run --no-session -t "Reply with
+exactly: goose ok"` started a session on "openai default" and answered
+"goose ok" from the box.
+
 ## 2026-11-09 (Agent Store integrations on Linux, 22:00 to 22:55)
 
 The owner chose to add the integrations that have official Linux
