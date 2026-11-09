@@ -90,6 +90,15 @@ The app's agent integrations (OpenCode, Goose, KiloCode and others)
 write the bare `openai.api.tiiny` into those tools' settings, so they
 need the setup above.
 
+<p>
+<img src="docs/img/setup-usb.png" width="360" alt="Connect Tiiny over USB prompt">
+<img src="docs/img/setup-api.png" width="360" alt="Use Tiiny's API in other apps prompt">
+</p>
+
+The two setup prompts this project adds. On a real machine the top shows
+the box photo from the downloaded app; it is left out here because it is
+Tiiny's image.
+
 The app hardcodes ports 60000, 60022 and 60053, which lie inside the
 default Linux ephemeral port range. A busy machine can briefly hold one
 for an outgoing connection, and a closed connection can keep it for the
