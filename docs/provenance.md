@@ -9,6 +9,20 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (KiloCode from the desktop app, 21:12)
+
+On the owner's KDE desktop (TiinyOS restarted on the build with the
+port 80 removal, DevTools on loopback for the click, then restarted
+without): Agent Store, KiloCode, Open. The bundle's `linux/open.sh` was
+the new one; it started `codium --open-url
+vscodium:extension/kilocode.kilo-code` (KiloCode is installed in
+VSCodium; the earlier version opened Cursor, the first editor found);
+configure rewrote `~/.config/kilo/kilo.jsonc` at 21:12:25. With Kilo's
+own key file and provider settings, `POST
+http://openai.api.tiiny/v1/chat/completions` model `default` answered
+"kilo ok" from `Qwen/Qwen3.6-35B-A3B` (`finish_reason` stop; a 20-token
+limit had returned empty content, all of it spent on reasoning).
+
 ## 2026-11-09 (API names: Not now and Don't ask again, 21:15)
 
 The owner accepted "Update API names" at 21:10:53: `/etc/hosts` holds
