@@ -9,6 +9,12 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (owner confirmation: Kilo default model)
+
+The repository owner confirmed that Kilo Code in VSCodium now works
+with the Tiiny provider as the default for new chats, on the v0.1.0
+build running on their desktop.
+
 ## 2026-11-09 (OCR works; repository public, 21:50)
 
 The owner chose "optional Tesseract" for OCR and asked to make the
