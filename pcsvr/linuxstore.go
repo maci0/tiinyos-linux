@@ -54,6 +54,11 @@ var linuxArtifacts = []linuxArtifact{
 		url:    "https://github.com/aaif-goose/goose/releases/download/v1.54.0/goose_1.54.0_amd64.deb",
 		sha256: "3ae99baeb83b5544571e4a443952a81a11b27de97964ad5c4dce10334cf83f0a", size: 167300616,
 	},
+	{
+		appID: "cline", bundleVersion: "v0.0.48", version: "v0.0.48", filename: "Cline_0.0.48_amd64.deb",
+		url:    "https://github.com/cline/cline/releases/download/desktop-v0.0.48/Cline_0.0.48_amd64.deb",
+		sha256: "72cb599004b4cbba2643b0a0344ddde3fe8d8569b1f59de6f3d559561b42a520", size: 170534396,
+	},
 	// The download is OpenClaw's own install script, which supports Linux.
 	{appID: "Openclaw", bundleVersion: "v2026.9.9"},
 }

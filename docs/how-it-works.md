@@ -133,7 +133,29 @@ Windows platforms only.
   directories (`TIINY_USER_XDG_*` from `tiinyos.sh`), not TiinyOS's
   private ones.
 
-Hermes Agent and Tiiny Meeting have no Linux build. Cline has one
-(`desktop-v0.0.48`), but Tiiny's setup configures it through macOS-only
-paths (WebKit localStorage under `~/Library`, PlistBuddy, `hdiutil`,
-`/Applications`); a Linux version of that setup was not written.
+Cline (`desktop-v0.0.48` `.deb`, needs the system's WebKitGTK 4.1) uses
+Tiiny's `runtime.cjs` for the provider settings
+(`~/.cline/data/settings/providers.json`, provider `tiinyos`); the
+macOS script that sets the app's chosen model writes WebKit storage under
+`~/Library`, so `linux/integrations/cline/frontend.js` does the same in
+WebKitGTK's `~/.local/share/bot.cline.app/localstorage/tauri_localhost_0.localstorage`
+(`node:sqlite`; previous values kept and restored on uninstall). Hermes
+Agent and Tiiny Meeting have no Linux build.
+
+## Uninstalling integrations
+
+Removing `~/.tiinyai` (README, Uninstall) removes each integration's
+bundle and app. Left elsewhere:
+
+| Integration | Files |
+|---|---|
+| KiloCode | the extension in your editor; `~/.config/kilo`, `~/.local/share/kilo`; `kilo-code.new.model.providerID`/`modelID` in the editor's `settings.json` |
+| OpenCode | `~/.opencode`; the `hardware-box` provider in `~/.config/opencode/opencode.json` |
+| Pi | the `hardware-box` provider in `~/.pi/agent` |
+| OpenClaw | `~/.openclaw` |
+| Goose | `~/.local/share/applications/tiiny-goose.desktop`; settings in `~/.config/goose` |
+| Cline | `~/.local/share/applications/tiiny-cline.desktop`; `~/.cline`; `~/.local/share/bot.cline.app` |
+
+The `tiinyai://` link handler is registered with `xdg-mime`; if
+`xdg-mime query default x-scheme-handler/tiinyai` prints
+`tiinyos.desktop`, remove that line from `~/.config/mimeapps.list`.

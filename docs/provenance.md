@@ -9,6 +9,36 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-09 (Cline on Linux; README status table, 23:00 to 23:10)
+
+The owner confirmed Goose works and asked to try Cline. Tiiny's macOS
+bundle (`cline-darwin-arm64-integration-v0.0.48.zip`) keeps the
+provider in `~/.cline/data/settings/providers.json` through
+`runtime.cjs` (no macOS dependency for `begin`, `configure`, `restore`,
+`rollback`); everything else (app checks, launch, hub, `frontend.cjs`
+writing WKWebView localStorage under `~/Library` with `/usr/bin/sqlite3`)
+is macOS or Windows only. Upstream `cline/cline` `desktop-v0.0.48`
+publishes `Cline_0.0.48_amd64.deb` (`72cb5990...`, 170534396 bytes):
+`usr/bin/cline-app` (Tauri, links `libwebkit2gtk-4.1`) and
+`usr/bin/cline-cli` 3.0.73. In a throwaway HOME the Linux app kept its
+UI state in `~/.local/share/bot.cline.app/localstorage/tauri_localhost_0.localstorage`
+(ItemTable `key TEXT, value BLOB`, UTF-16 JSON; the same keys as macOS,
+`lastProvider` empty). Added `linux/integrations/cline/` (install,
+detect, configure, open, uninstall, rollback, cleanup scripts and
+`frontend.js` using `node:sqlite`, which sets the three keys the macOS
+script sets and restores them on uninstall) and the pcsvr entry.
+
+Through the Agent Store on the owner's desktop: the first Get failed in
+configure (`cline hub ensure`: a hub from the throwaway-HOME test held
+port 25463 without a discovery record in the real HOME); after stopping
+those test processes by PID the retry installed it, Open started
+`cline-app` with `lastProvider: "tiinyos"`, execution target `local` and
+onboarding completed in its storage, and `cline-cli -P tiinyos` answered
+"cline ok" from the box. In the throwaway HOME the configured app opened
+past onboarding to its session list. The README now leads with a
+works/does-not table; integration leftovers moved to
+`docs/how-it-works.md`.
+
 ## 2026-11-09 (Goose answers through the box, 22:58)
 
 The Goose 1.54.0 install from the Agent Store ships its CLI at

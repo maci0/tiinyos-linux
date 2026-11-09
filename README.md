@@ -6,9 +6,9 @@ USB or Wi-Fi. Unofficial; not affiliated with or endorsed by Tiiny AI.
 TiinyOS ships for Windows and macOS only: an Electron app plus a Go
 service, `pcsvr`, that Wine cannot run. This project runs the official
 app under Electron and replaces `pcsvr` with a Linux service written
-from scratch for the same HTTP API. No Tiiny code is in this repository
-or in the release: on first start, and whenever Tiiny releases a new
-version, the launcher downloads the official build from Tiiny.
+from scratch. No Tiiny code is in this repository or the release: the
+launcher downloads the official build from Tiiny on first start and on
+every new version.
 
 ## Install
 
@@ -17,114 +17,75 @@ curl -fLo tiinyos https://github.com/maci0/tiinyos-linux/releases/latest/downloa
 chmod +x tiinyos && ./tiinyos
 ```
 
-Or download `tiinyos` from the
-[latest release](https://github.com/maci0/tiinyos-linux/releases/latest)
-(`SHA256SUMS` is attached).
-
 One 18 MB x86-64 executable, nothing else to install. It adds TiinyOS
-to the app menu, then downloads TiinyOS (about 140 MB, from Tiiny) and
-Electron (110 MB, from its GitHub release) to `~/.local/share/tiinyos`.
+to the app menu and downloads TiinyOS (140 MB, from Tiiny) and Electron
+(110 MB) to `~/.local/share/tiinyos`. Build it yourself with
+`pack/build.sh` (Go 1.27, python3, curl, tar).
 
-To build it yourself (Go 1.27, python3, curl, tar with xz):
-`pack/build.sh` writes `dist/tiinyos`.
+## What works
 
-## Uninstall
+| Feature | Linux | Notes |
+|---|:-:|---|
+| Chat, Model Store, Dashboard, Vault, History, Settings | ✅ | |
+| Box over USB | ✅ | without NetworkManager: one password prompt |
+| Box over Wi-Fi | ✅ | |
+| Switching USB ↔ Wi-Fi while running | ✅ | |
+| Box OS update from Settings | ✅ | |
+| Box apps (Tiiny Music, n8n, Open WebUI, …) | ✅ | Tiiny Music checked |
+| OCR | ✅ | the app's built-in Tesseract |
+| API names for other programs | ✅ | `openai.api.tiiny` etc. via `/etc/hosts`, one password prompt |
+| Agent Store: KiloCode | ✅ | VS Code, Cursor or VSCodium |
+| Agent Store: OpenCode, Pi, OpenClaw | ✅ | open in your terminal or browser |
+| Agent Store: Goose, Cline | ✅ | desktop apps; Cline needs WebKitGTK 4.1 |
+| Agent Store: Hermes Agent, Tiiny Meeting | ❌ | Tiiny ships no Linux build |
+| Uninstall Goose from the store | ❌ | TiinyOS shows "Manual uninstall required"; see Uninstall below |
+| Windows-only helpers (text selection, auto-update installer) | ❌ | the launcher updates the app instead |
+| ARM64 | ❌ | x86-64 only |
 
-Quit TiinyOS from its tray icon, then:
-
-```sh
-rm -rf ~/.local/share/tiinyos            # app, Electron, launcher, profile
-rm -f ~/.local/share/applications/tiinyos.desktop
-rm -f ~/.config/autostart/tiiny-ai.desktop  # if "Auto start" was on
-rm -rf ~/.tiinyai                         # Agent Store integration bundles
-xdg-mime query default x-scheme-handler/tiinyai  # tiinyos.desktop? remove that
-                                          # line from ~/.config/mimeapps.list
-```
-
-If you set up the API names, delete the block between
-`# tiinyos api names begin` and `# tiinyos api names end` in
-`/etc/hosts` (`sudoedit /etc/hosts`). If NetworkManager set up the USB
-link, remove its profile: `nmcli connection delete` with the
-`tiiny-usb-<mac>` name that `nmcli connection show` lists. KiloCode, if
-installed from the Agent Store, stays in your editor; remove it there,
-`~/.config/kilo` and `~/.local/share/kilo` hold its Tiiny settings, and
-the editor's `settings.json` has `kilo-code.new.model.providerID` and
-`modelID` set to `tiiny` and `default`. The other integrations keep their
-files under `~/.tiinyai/desktop-agents` (removed above), plus: OpenCode
-`~/.opencode` and a `hardware-box` provider in
-`~/.config/opencode/opencode.json`; Pi a `hardware-box` provider in
-`~/.pi/agent`; OpenClaw `~/.openclaw`; Goose
-`~/.local/share/applications/tiiny-goose.desktop` and its settings in
-`~/.config/goose`.
-
-## What it adds
+Tested with TiinyOS 1.0.3 and box OS 0.1.39 on KDE Wayland and Xvfb.
+Every integration was checked answering through the box.
 
 <p>
 <img src="docs/img/setup-usb.png" width="360" alt="Connect Tiiny over USB prompt">
 <img src="docs/img/setup-api.png" width="360" alt="Use Tiiny's API in other apps prompt">
 </p>
 
-- **USB without a network daemon.** If no NetworkManager takes the box's
-  USB link, TiinyOS asks once (polkit password prompt) and sets it up
-  itself. Wi-Fi needs nothing.
-- **API names for other programs.** One password prompt adds
-  `openai.api.tiiny`, `anthropic.api.tiiny` and `ollama.api.tiiny` to
-  `/etc/hosts`, pointing at the box; skipped if they are already there.
-  The box's mDNS names (`openai.api.tiiny.local`) work without it.
-- **Agent Store integrations on Linux**, set up to use the box's models:
-  KiloCode (VS Code, Cursor or VSCodium), OpenCode, Pi and OpenClaw
-  (each opens in your terminal or browser) and Goose (desktop app).
-  OpenCode, Pi and Goose come from their projects' official Linux
-  releases, OpenClaw from its own installer, KiloCode from the editor's
-  extension store.
-- **Switching** between USB and Wi-Fi while the app runs, with no restart.
+How it works, and what each part does:
+[docs/how-it-works.md](docs/how-it-works.md).
 
-In the app, the prompts show the box photo from the downloaded TiinyOS.
+## Uninstall
 
-## Status
-
-Tested with TiinyOS 1.0.3 and a real box under Xvfb and on KDE Wayland:
-chat, model store, dashboard, vault, history, agent store, Tiiny Music,
-settings, box OS update, power cycles, USB and Wi-Fi. x86-64 only.
-Details: [docs/how-it-works.md](docs/how-it-works.md).
-
-## Missing on Linux
-
-Tiiny's Agent Store offers its desktop integrations for macOS and
-Windows. This port adds Linux entries for the ones with an official
-Linux build (see above). These three stay unavailable:
-
-| Integration | Why |
-|---|---|
-| Hermes Agent | Tiiny's own app; no Linux build |
-| Tiiny Meeting | Tiiny's own app; no Linux build |
-| Cline | Linux build exists; Tiiny's setup for it is macOS-only (WebKit storage, `/Applications`) and has no Linux version yet |
-
-Apps that run on the box itself (Tiiny Music, n8n, Open WebUI,
-OpenHands and the rest) do not depend on this port; Tiiny Music was
-checked. OCR works: on Linux the app uses its built-in Tesseract
-(WebAssembly), which downloads its language data on first use.
-
-## Tests
+Quit TiinyOS from its tray icon, then:
 
 ```sh
-for m in pcsvr fetch repackage; do (cd $m && go test ./...); done
+rm -rf ~/.local/share/tiinyos ~/.tiinyai
+rm -f ~/.local/share/applications/tiinyos.desktop ~/.config/autostart/tiiny-ai.desktop
 ```
 
-## Layout
+Also remove the `tiinyos api names` block from `/etc/hosts` if you set
+it up, and the `tiiny-usb-<mac>` NetworkManager profile if there is
+one. What each Agent Store integration leaves behind is listed in
+[docs/how-it-works.md](docs/how-it-works.md#uninstalling-integrations).
+
+## Development
+
+```sh
+pack/build.sh                                                  # dist/tiinyos
+for m in pcsvr fetch repackage; do (cd $m && go test ./...); done
+```
 
 | Path | What it is |
 |---|---|
 | `pcsvr/` | Linux PC service |
 | `fetch/` | Downloads and unpacks the official app and Electron |
-| `linux/` | Launcher, Electron entry, setup prompt, integration scripts, configs |
-| `pack/` | `build.sh` builds `dist/tiinyos`; API path tracker |
+| `linux/` | Launcher, Electron entry, setup prompt, integration scripts |
+| `pack/` | Build script; API path tracker |
 | `repackage/` | Self-extractor that is `dist/tiinyos` |
 | `docs/` | How it works, API reference, provenance ledger |
 
 ## License
 
-MIT (`LICENSE`) for this repository. TiinyOS stays under Tiiny's terms.
+MIT (`LICENSE`) for this repository; TiinyOS stays under Tiiny's terms.
 The executable includes 7-Zip 26.05 (`7zz`, LGPL-2.1 with BSD parts;
-license in `7zz-License.txt` next to it, source at
+license in `7zz-License.txt`, source at
 <https://github.com/ip7z/7zip/releases/tag/26.05>).
