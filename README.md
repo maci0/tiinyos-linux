@@ -157,3 +157,8 @@ write-up of the device API is
 
 TiinyOS is Tiiny AI's software and Electron is the Electron project's.
 This repository holds only the Linux service, launcher, and tooling.
+
+## License
+
+MIT for this repository's code (`LICENSE`). TiinyOS itself, which the
+launcher downloads from Tiiny, stays under Tiiny's own terms.
