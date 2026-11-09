@@ -1,0 +1,475 @@
+{
+  "package": "tiinyos-1.0.3-macos-arm64.pkg",
+  "package_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+  "paths": {
+    "DELETE /account/auth_keys": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "DELETE /account/temporary_auth_keys": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "DELETE /debug/requests": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /account/auth_keys": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /account/temporary_auth_keys": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /debug/guard/probe": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /debug/guard/status": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /debug/requests": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /devices_list": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /devices_list/ws": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /dns/records": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /docs": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Docs registration stores GET /docs on the swagger handler. proxyOrLocal keeps /docs local. TestCatalogRoutes.",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /docs/swagger": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /log": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /status": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /status/stream": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "GET /version": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /account/auth_keys": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /account/get_temporary_auth_key": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /account/temporary_auth_keys": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /account/update_auth_key": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /account/update_usb_auto_eject": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /account/update_wireguard": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /debug/guard/standdown": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /debug/guard/status": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /debug/pprof": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /debug/requests": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /debug/requests/capture": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /debug/unlock": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /devices_list": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /devices_list/ws": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /dns/records": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /dns/resolve": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /dns/update_record": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /docs": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /docs/swagger": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /log": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /select_device": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /status": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /status/stream": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "OPTIONS /version": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "POST /account/get_temporary_auth_key": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "POST /account/update_auth_key": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "POST /account/update_usb_auto_eject": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "POST /account/update_wireguard": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "POST /debug/guard/standdown": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "POST /debug/pprof": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "POST /debug/requests/capture": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "POST /debug/unlock": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "POST /dns/resolve": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "POST /dns/update_record": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    },
+    "POST /select_device": {
+      "first_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "first_sha256": "510004aece8bd87c7a0566d498e3c081accc778b8d548b599e2c23f2bf7b2822",
+      "last_package": "tiinyos-1.0.3-macos-arm64.pkg",
+      "provenance": "Apple tiiny_svr route table, Linux handler mux-tested",
+      "removed": false,
+      "source": "apple-route-table",
+      "status": "implemented"
+    }
+  },
+  "scope": "Apple tiiny_svr route table only. UI-only names are not listed."
+}

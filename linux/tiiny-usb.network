@@ -1,0 +1,17 @@
+# systemd-networkd: DHCP on the Tiiny USB link, for hosts without
+# NetworkManager. Install once:
+#   sudo cp linux/tiiny-usb.network /etc/systemd/network/ && sudo networkctl reload
+# The box serves DHCP on its USB gadget. Its route and DNS are not used,
+# so the host's internet path stays on the normal interfaces.
+[Match]
+Property=ID_VENDOR=Tiiny
+
+[Network]
+DHCP=ipv4
+LinkLocalAddressing=ipv6
+DefaultRouteOnDevice=no
+
+[DHCPv4]
+UseRoutes=no
+UseDNS=no
+UseDomains=no

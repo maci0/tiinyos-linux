@@ -1,0 +1,38 @@
+Name: pcsvr-api
+Host: 127.0.0.1
+Port: 60000
+Timeout: 3600000
+MaxBytes: 10737418240
+
+Log:
+  Level: info
+  Mode: file
+  Path: logs
+
+DNS:
+  Enabled: true
+  ListenHost: 127.0.0.1
+  ListenPort: 60053
+  Domain: tiiny.local
+  DefaultIPv4: 127.0.0.1
+  TTLSeconds: 60
+
+DeviceDiscovery:
+  Enabled: true
+  BroadcastIntervalSeconds: 1
+  UDPPort: 39217
+  HTTPPort: 39218
+  HTTPPath: /device.json
+  RequestToken: GADGET_DISCOVER_V1
+  ResponseWindowMillis: 800
+  HTTPTimeoutMillis: 1000
+  DeviceTTLSeconds: 8
+
+SSHProxy:
+  Enabled: true
+  Host: 127.0.0.1
+  Port: 60022
+  TargetPort: 22
+
+USBLink:
+  Enabled: true

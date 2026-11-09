@@ -1,0 +1,28 @@
+# Vendor installers. Download these yourself. They are not our code.
+*.pkg
+*.exe
+*.dmg
+*.msi
+
+# Downloaded app and Electron (fetch.py), profile data, local pcsvr builds.
+linux/app/
+linux/data/
+linux/pcsvr
+linux/pcsvr.new
+__pycache__/
+
+# Build output and scratch.
+dist/
+.scratch/
+repackage/payload.zip
+auth_data/
+
+# Go
+pcsvr/pcsvr
+*.test
+
+# Editor and OS
+.DS_Store
+*.swp
+.idea/
+.vscode/

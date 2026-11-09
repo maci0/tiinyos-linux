@@ -1,0 +1,8 @@
+Host: 127.0.0.1
+Port: 0
+DeviceDiscovery:
+  Enabled: true
+DNS:
+  Enabled: false
+SSHProxy:
+  Enabled: false

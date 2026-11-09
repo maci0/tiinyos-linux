@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TiinyOS</title>
+<style>
+  :root {
+    --text: #000;
+    --muted: #6b6b6b;
+    --line: #ececec;
+    --button: #000;
+    --button-text: #fff;
+    --error: #c62828;
+    font-family: "-apple-system-body", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #fff; color: var(--text); }
+  body { display: flex; flex-direction: column; user-select: none; }
+  .photo { height: 168px; background: #e9edf0 center 38% / cover no-repeat; }
+  main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 24px 32px 28px; text-align: center; }
+  h1 { margin: 0 0 8px; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); max-width: 380px; }
+  p.error { color: var(--error); font-size: 12px; margin-top: 8px; word-break: break-word; }
+  .actions { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+  a.button { display: block; width: 236px; height: 44px; line-height: 44px; border-radius: 12px; background: var(--button); color: var(--button-text); font-size: 15px; font-weight: 500; text-decoration: none; }
+  a.button:hover { opacity: 0.86; }
+  a.link { color: var(--muted); font-size: 13px; text-decoration: none; }
+  a.link:hover { color: var(--text); }
+  .spinner { width: 22px; height: 22px; margin: 6px auto 0; border: 2px solid var(--line); border-top-color: var(--text); border-radius: 50%; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="photo" id="photo"></div>
+<main>
+  <section>
+    <h1 id="title">TiinyOS</h1>
+    <p id="text"></p>
+    <div class="spinner" id="spinner" hidden></div>
+    <p class="error" id="error"></p>
+  </section>
+  <div class="actions">
+    <a class="button" id="primary" href="#setup"></a>
+    <a class="link" id="secondary" href="#close"></a>
+  </div>
+</main>
+<script>
+  // The launcher's main.js loads this page with ?mode=usb or ?mode=api,
+  // reacts to #setup and #close, and calls show().
+  const TEXT = {
+    usb: {
+      ask: ["Connect Tiiny over USB", "Tiiny is plugged in, but this computer has not set up the USB link yet. Setting it up asks for your administrator password once each time Tiiny is plugged in.", "Set up USB", "Use Wi-Fi instead"],
+      working: ["Setting up USB", "Enter your password in the system prompt to continue."],
+      done: ["USB connected", "TiinyOS now talks to Tiiny over USB."],
+      failed: ["USB was not set up", "TiinyOS keeps using Wi-Fi. You can try again at any time.", "Try again", "Close"],
+    },
+    api: {
+      ask: ["Use Tiiny's API in other apps", "Coding tools and agents reach Tiiny at openai.api.tiiny, anthropic.api.tiiny and ollama.api.tiiny. Setting this up adds those names to this computer and asks for your administrator password once.", "Set up API names", "Not now"],
+      working: ["Setting up API names", "Enter your password in the system prompt to continue."],
+      done: ["API names ready", "Other apps on this computer can now reach Tiiny's API."],
+      failed: ["API names were not set up", "TiinyOS itself keeps working. You can try again from Settings, API Key.", "Try again", "Close"],
+    },
+  };
+  const params = new URLSearchParams(location.search);
+  const mode = TEXT[params.get("mode")] || TEXT.usb;
+  if (params.get("image")) {
+    document.getElementById("photo").style.backgroundImage = `url("${params.get("image")}")`;
+  }
+  function show(state, detail) {
+    const [title, text, primary, secondary] = mode[state];
+    document.getElementById("title").textContent = title;
+    document.getElementById("text").textContent = text;
+    document.getElementById("spinner").hidden = state !== "working";
+    document.getElementById("error").textContent = detail || "";
+    for (const [id, label] of [["primary", primary], ["secondary", secondary]]) {
+      const link = document.getElementById(id);
+      link.hidden = !label;
+      link.textContent = label || "";
+    }
+    history.replaceState(null, "", location.pathname + location.search);
+  }
+  show("ask");
+</script>
+</body>
+</html>
