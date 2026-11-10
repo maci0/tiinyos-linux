@@ -12,6 +12,12 @@ import (
 // a websocket dependency.
 const wsGUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
+// wsOpClose is the close frame opcode; wsCloseNormal is its payload for
+// status 1000 (normal closure).
+const wsOpClose = 0x8
+
+var wsCloseNormal = []byte{0x03, 0xe8}
+
 func websocketAccept(key string) string {
 	key = trim(key)
 	if key == "" {
@@ -81,7 +87,7 @@ func readWS(conn io.ReadWriter) (byte, []byte, error) {
 			}
 			continue
 		}
-		if opcode == 0x8 {
+		if opcode == wsOpClose {
 			return opcode, payload, io.EOF
 		}
 		return opcode, payload, nil

@@ -1278,7 +1278,9 @@ func (s *state) devicesWS(w http.ResponseWriter, r *http.Request) {
 	heartbeats := make(chan struct{}, 1)
 	out := make(chan []byte, 32)
 	out <- mustJSON(first)
+	writerDone := make(chan struct{})
 	go func() {
+		defer close(writerDone)
 		for payload := range out {
 			if err := writeWSText(conn, payload); err != nil {
 				return
@@ -1286,12 +1288,16 @@ func (s *state) devicesWS(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 	// Client text is read on its own goroutine. The binary compares
-	// that text with the 9-byte word "heartbeat".
+	// that text with the 9-byte word "heartbeat". When reading ends the
+	// handler returns and closes the connection; clientClosed says the
+	// client sent a close frame, which gets one back.
+	clientClosed := make(chan bool, 1)
 	go func() {
 		for {
 			_ = conn.SetReadDeadline(time.Now().Add(90 * time.Second))
 			opcode, payload, err := readWS(conn)
 			if err != nil {
+				clientClosed <- opcode == wsOpClose
 				return
 			}
 			if opcode == 0x1 && string(payload) == "heartbeat" {
@@ -1306,6 +1312,13 @@ func (s *state) devicesWS(w http.ResponseWriter, r *http.Request) {
 	defer ping.Stop()
 	for {
 		select {
+		case byClient := <-clientClosed:
+			close(out)
+			<-writerDone
+			if byClient {
+				_ = writeWS(conn, wsOpClose, wsCloseNormal)
+			}
+			return
 		case events := <-ch:
 			for _, event := range events {
 				select {

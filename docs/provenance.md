@@ -9,6 +9,26 @@ project's files only; each user's launcher downloads the official
 TiinyOS installer from Tiiny. The connect stub returns a local user with an
 empty email. Tests use the placeholder device id `TNYM000000000000000`.
 
+## 2026-11-10 (websocket leak on /devices_list/ws)
+
+The owner reported TiinyOS's Electron main process (pid 444676) holding
+about 28,000 connections to its pcsvr on 127.0.0.1:60000. `ss` showed
+28,225 ESTABLISHED on both ends, each having sent one ~582-byte
+handshake and still receiving pcsvr heartbeats; their send times grew
+by 2,880 per hour (one per 1.25 s) over the 10.7 h run, until the
+ephemeral port range (32768-60999) was exhausted (`go test` could no
+longer bind 127.0.0.1:0). The app's main process reads the device list
+by opening `/devices_list/ws`, taking the first frame and calling
+`close()` (`getPcServiceDeviceListWsUrl` caller in `out/main/index.js`).
+`devicesWS` (`pcsvr/main.go`) stopped reading after the client's close
+frame but never answered it or returned, so neither side closed. It now
+answers a client close with a close frame (status 1000) and returns,
+closing the connection; `TestDevicesWSClosesOnClientClose` failed
+before (no close frame within 2 s) and passes after; `go test -race`
+passes. With the fixed build the connections to :60000 stayed at 3 over
+three minutes while short polls kept opening and closing (8 client ports
+seen in 15 s).
+
 ## 2026-11-09 (clean reinstall; tiinyai:// handler, 23:12 to 23:27)
 
 The owner asked to remove the install and every leftover, run the README
